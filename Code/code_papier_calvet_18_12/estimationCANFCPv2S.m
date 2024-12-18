@@ -17,7 +17,7 @@ fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'Tol
 filter='ukf_lfnlh'; likefun='ratelikefunlf';
 
 %load the data
-load(['../CODE PAPER CALVET/data/nusrates.mat'],'rates','mat','swapmat','libormat','mdate','-mat');
+load('C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
 
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
@@ -68,9 +68,9 @@ if estimation
         par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['../output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike
-    save(['../output/nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
+    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\output\nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if stderror
