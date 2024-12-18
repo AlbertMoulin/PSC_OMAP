@@ -51,15 +51,15 @@ if isfinite(det(PEst))
     end
     nlnL = -mean(lnLv(4:end));
     modelflag=hfunpar.modelflag;
-    if exist(['../CODE PAPER CALVET/output/nln_',modelflag,'.txt'],'file');
-        nln0=load(['../CODE PAPER CALVET/output/nln_',modelflag,'.txt']);
+    if exist(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt'],'file');
+        nln0=load(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt']);
         if nlnL<nln0
-            save(['../CODE PAPER CALVET/output/nln_',modelflag,'.txt'], 'nlnL', '-ascii','-double');
-            save(['../CODE PAPER CALVET/output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
+            save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln',modelflag,'.txt'], 'nlnL', '-ascii','-double');
+            save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
         end
     else
-        save(['../CODE PAPER CALVET/output/nln_',modelflag,'.txt'], 'nlnL', '-ascii','-double');
-        save(['../CODE PAPER CALVET/output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
+        save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt'], 'nlnL', '-ascii','-double');
+        save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
 
     end
 else
