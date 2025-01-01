@@ -21,7 +21,7 @@ load(['../data/nusrates.mat'],'rates','mat','swapmat','libormat','mdate','-mat')
 
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
-rates=interpmin(mdate,rates(:,[4,7:end]),wdate);
+rates=interp1(mdate,rates(:,[4,7:end]),wdate);
 libormat=6;
 mat=[6/12;swapmat];
 [T,ny]=size(rates)
@@ -65,9 +65,9 @@ if estimation
         par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['../output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    save(['./output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike
-    save(['../output/nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
+    save(['./output/nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if stderror
