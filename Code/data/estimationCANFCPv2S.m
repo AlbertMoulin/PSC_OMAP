@@ -19,9 +19,6 @@ filter='ukf_lfnlh'; likefun='ratelikefunlf';
 %load the data
 load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
 
-disp('ehfu')
-disp(mdate(0))
-disp('OK')
 
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
