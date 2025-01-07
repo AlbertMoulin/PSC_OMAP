@@ -1,5 +1,5 @@
 % Liste des fichiers CSV
-csvFiles = {'/MATLAB Drive/data_dette/mat.csv', '/MATLAB Drive/data_dette/Mdates_dette.csv', '/MATLAB Drive/data_dette/rates.csv'};
+csvFiles = {'../data_dette/mat.csv', '../data_dette/Mdates_dette.csv', '../data_dette/rates.csv'};
 
 % Liste des fichiers CSV
 tabnames = {'mat', 'mdate', 'rates'};
@@ -15,4 +15,4 @@ for i = 1:length(csvFiles)
 end
 
 % Sauvegarder toutes les données dans un fichier MAT
-save('/MATLAB Drive/data_dette/nusrates_dette.mat', '-struct', 'data');
+save('../data_dette/nusrates_dette.mat', '-struct', 'data');

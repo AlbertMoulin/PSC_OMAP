@@ -7,8 +7,8 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=0; % unconstrained optimization
-stderror=0;
+estimation=1; unc=1; % unconstrained optimization
+stderror=1;
 gammavplot=1;
 
 tol=1e-4; nit=50000;
@@ -17,13 +17,20 @@ fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'Tol
 filter='ukf_lfnlh'; likefun='ratelikefunlf';
 
 %load the data
-load(['../data/nusrates.mat'],'rates','mat','swapmat','libormat','mdate','-mat');
+load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
+
+disp('ehfu')
+disp(mdate(0))
+disp('OK')
 
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
+
+
+
 rates=interp1(mdate,rates(:,[4,7:end]),wdate);
 libormat=6;
-mat=[6/12;swapmat];
+%mat=[6/12;swapmat];
 [T,ny]=size(rates)
 datevec([wdate(1);wdate(end)])
 lastdate=datestr(wdate(end),1);
@@ -65,9 +72,9 @@ if estimation
         par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['./output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    save(['../output/par_',modelflag,'.txt'], 'par', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike
-    save(['./output/nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
+    save(['../output/nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if stderror
