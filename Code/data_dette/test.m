@@ -23,8 +23,10 @@ load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
 
-%disp(rates(:,[4,7:end]))
-%disp(wdate)
+
+
+disp( size( rates(:,:) )  )
+disp(size(mdate))
 
 %load the data
 load(['../data/nusrates.mat'],'rates','mat','mdate','-mat');
@@ -34,5 +36,5 @@ cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
 
 %disp(wdate)
-disp(rates(:,[4,7:end]))
+%disp(rates(1:10,:))
 

@@ -25,7 +25,7 @@ wdate=cdate(weekday(cdate)==4);dt=1/52;
 
 
 
-rates=interp1(mdate,rates(:,[4,7:end]),wdate);
+rates=interp1(mdate,rates(:,:));
 libormat=6;
 %mat=[6/12;swapmat];
 [T,ny]=size(rates)
