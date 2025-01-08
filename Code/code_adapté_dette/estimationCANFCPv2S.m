@@ -17,9 +17,9 @@ fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'Tol
 filter='ukf_lfnlh'; likefun='ratelikefunlf';
 
 %load the data
-load('C:\code\PSC_OMAP\Code\code_adapté_dette\data\nusrates_dette.mat','rates','mat','swapmat','libormat','mdate','-mat');
+load('C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
 
-disp(mdate) --> ici, il semble y avoir un problème avec les mdates
+%disp(mdate) %--> ici, il semble y avoir un problème avec les mdates
 %disp(rates)
 %disp(mat)
 
@@ -37,7 +37,7 @@ lastdate=datestr(wdate(end),1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %(1) Three-factor Gauss-Affine Model
-termModel=['CANFCPv2']; hfun=['liborswap'];
+termModel=['CANFCPv2']; hfun=['liborswap']; % définit le modèle (ici le modèle du papier) utilisé 
 hfunpar.dt=dt; hfunpar.ny=ny;
 hfunpar.swapmat=swapmat; hfunpar.libormat=libormat'/12;
 nx=10;
@@ -69,9 +69,9 @@ t0=clock;
 runtime=etime(clock,t0)
 if estimation
     if unc
-        par=fminunc(likefun,par,fopt,rates, hfun,filter,termModel,hfunpar);
+        par=fminunc(likefun,par,fopt,rates, hfun,filter,termModel,hfunpar); % recherche de min pour bcp de param. Fonctionne bien. ultilise kalman filter
     else
-        par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
+        par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar); % recherche de min pour peu de paramètres. Difficile à tourner. %(par,data,hfun,filter, termModel,hfunpar) sont les paramètres de likefun.
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
     save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');

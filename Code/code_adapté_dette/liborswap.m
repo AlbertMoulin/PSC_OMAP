@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [y] = liborswap(x,t,ind,hfunpar)
+function [y] = liborswap(x,t,ind,hfunpar) % Cette fonction retourne y !!
 % Measurement equation on libor and swap rates
 % libor rates are based on actual/360; libor=100*(exp(yt)-1)/t
 % swap rates are based on half year tenor; swap=200*(1-disc(mat))/cumsum(disc)
@@ -12,8 +12,8 @@ bt_swap=   hfunpar.bt_swap;
 swapmat=   hfunpar.swapmat;
 h =hfunpar.h; %number of payments per year
 
-dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x);
-swr=h*100*(1-dis)./cumsum(dis);
+dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x); % applique formule pour le prix dans le modèle
+swr=h*100*(1-dis)./cumsum(dis); % applique formules p.949. TRouver notre version pour dette
 y_swap=swr(swapmat*h,:);
 
 libormat= hfunpar.libormat;
@@ -23,7 +23,7 @@ bt_libor=   hfunpar.bt_libor;
 
 y_libor=100*(exp(repmat(at_libor,1,nsigma)+bt_libor*x) -1)./repmat(libormat,1,nsigma);
 y=[y_libor;y_swap];
-y=y(ind,:);
+y=y(ind,:);% qu'est ce que ind ? 
 
 
 
