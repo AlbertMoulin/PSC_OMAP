@@ -21,7 +21,7 @@ load(['../data/nusrates.mat'],'rates','mat','swapmat','libormat','mdate','-mat')
 
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
-rates=interpmin(mdate,rates(:,[4,7:end]),wdate);
+rates=interp1(mdate,rates(:,[4,7:end]),wdate);
 libormat=6;
 mat=[6/12;swapmat];
 [T,ny]=size(rates)
