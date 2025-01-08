@@ -7,7 +7,7 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=0; % unconstrained optimization
+estimation=1; unc=1; % unconstrained optimization
 stderror=0;
 gammavplot=1;
 
@@ -42,7 +42,7 @@ if exist(['../output/par_',modelflag,'.txt'],'file');
     par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
 else
     par=[-3.2484   -4.1377   -3.8077   -0.4693  -0.2820 -9.6393 zeros(1,nx) ]';
-    par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
+    % par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
 end
 epar=exp(par);
 kappar=epar(1);
