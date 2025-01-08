@@ -17,17 +17,16 @@ fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'Tol
 filter='ukf_lfnlh'; likefun='ratelikefunlf';
 
 %load the data
-load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
+load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate', 'swapmat' ,'-mat');
 
 
-cdate=[mdate(1):mdate(end)]';
+cdate=[mdate(end):mdate(1)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
-
 
 
 rates=interp1(mdate,rates(:,:));
 libormat=6;
-%mat=[6/12;swapmat];
+mat=[swapmat];
 [T,ny]=size(rates)
 datevec([wdate(1);wdate(end)])
 lastdate=datestr(wdate(end),1);

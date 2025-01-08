@@ -1,8 +1,8 @@
 % Liste des fichiers CSV
-csvFiles = {'../data_dette/mat.csv', '../data_dette/Mdates_dette.csv', '../data_dette/rates.csv'};
+csvFiles = {'../data_dette/mat.csv', '../data_dette/Mdates_dette.csv', '../data_dette/rates.csv',  '../data_dette/swapmat.csv'};
 
 % Liste des fichiers CSV
-tabnames = {'mat', 'mdate', 'rates'};
+tabnames = {'mat', 'mdate', 'rates', 'swapmat'};
 
 % Initialisation d'une structure pour stocker les données
 data = struct();

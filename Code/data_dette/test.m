@@ -20,13 +20,15 @@ filter='ukf_lfnlh'; likefun='ratelikefunlf';
 load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
 
 
-cdate=[mdate(1):mdate(end)]';
+cdate=[mdate(end):mdate(1)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
 
 
-
-disp( size( rates(:,:) )  )
-disp(size(mdate))
+% disp( size( rates(:,:) )  )
+% disp('mdate : ')
+% disp(mdate(end))
+% disp('cdate : ')
+% disp(cdate)
 
 %load the data
 load(['../data/nusrates.mat'],'rates','mat','mdate','-mat');
@@ -35,6 +37,7 @@ load(['../data/nusrates.mat'],'rates','mat','mdate','-mat');
 cdate=[mdate(1):mdate(end)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
 
-%disp(wdate)
-%disp(rates(1:10,:))
+%disp(mdate(end))
+% disp(rates(1:10,:))
+disp(cdate)
 
