@@ -41,7 +41,10 @@ yPred = yPredSigmaPts*wSigmaPts';
 wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
 exSigmaPt = xPredSigmaPts - repmat(xPred,1,nsp);
 eySigmaPt = yPredSigmaPts - repmat(yPred,1,nsp);
+
+
 yPredVar  = (wSigmaPts_ymat .* eySigmaPt) * eySigmaPt' + R;
+
 xyPredVar = exSigmaPt * (wSigmaPts_ymat .* eySigmaPt)';
 
 %K  = xyPredVar*pinv(yPredVar);

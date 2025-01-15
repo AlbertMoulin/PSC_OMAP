@@ -10,7 +10,7 @@ function [y] = liborswap(x,t,ind,hfunpar)
 at_swap=   hfunpar.at_swap;
 bt_swap=   hfunpar.bt_swap;
 swapmat=   hfunpar.swapmat;
-h =hfunpar.h; %number of payments per year
+h = hfunpar.h; %number of payments per year 
 
 dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x);
 swr=h*100*(1-dis)./cumsum(dis);
@@ -20,10 +20,13 @@ libormat= hfunpar.libormat;
 at_libor=   hfunpar.at_libor;
 bt_libor=   hfunpar.bt_libor;
 
-
-y_libor=100*(exp(repmat(at_libor,1,nsigma)+bt_libor*x) -1)./repmat(libormat,1,nsigma);
-y=[y_libor;y_swap];
-y=y(ind,:);
+if length(libormat)==0
+    y = [y_swap]
+else
+    y_libor=100*(exp(repmat(at_libor,1,nsigma)+bt_libor*x) -1)./repmat(libormat,1,nsigma);
+    y=[y_libor;y_swap];
+    y=y(ind,:);
+end
 
 
 

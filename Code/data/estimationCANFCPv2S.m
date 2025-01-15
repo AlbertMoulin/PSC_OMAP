@@ -24,8 +24,8 @@ cdate=[mdate(end):mdate(1)]';
 wdate=cdate(weekday(cdate)==4);dt=1/52;
 
 
-rates=interp1(mdate,rates(:,:));
-libormat=6;
+rates=interp1(mdate,rates(:,:),wdate);
+libormat=[];
 mat=[swapmat];
 [T,ny]=size(rates)
 datevec([wdate(1);wdate(end)])
@@ -36,17 +36,22 @@ lastdate=datestr(wdate(end),1);
 %(1) Three-factor Gauss-Affine Model
 termModel=['CANFCPv2']; hfun=['liborswap'];
 hfunpar.dt=dt; hfunpar.ny=ny;
-hfunpar.swapmat=swapmat; hfunpar.libormat=libormat'/12;
+hfunpar.swapmat=swapmat; 
+hfunpar.libormat=libormat'/12;
 nx=10;
 hfunpar.nx=nx;
 modelflag=[termModel,'_FS',num2str(nx)];
 hfunpar.modelflag=modelflag;
-if exist(['../output/par_',modelflag,'.txt'],'file');
-    par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
-else
-    par=[-3.2484   -4.1377   -3.8077   -0.4693  -0.2820 -9.6393 zeros(1,nx) ]';
-    par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
-end
+% if exist(['../output/par_',modelflag,'.txt'],'file');
+%     par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
+% else
+%     par=[-3.2484   -4.1377   -3.8077   -0.4693  -0.2820 -9.6393 zeros(1,nx) ]';
+%     par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
+% end
+
+par = [ 1 1 1 1 1 1 zeros(1,nx) ]
+
+
 epar=exp(par);
 kappar=epar(1);
 sigmar=epar(2);
@@ -57,10 +62,12 @@ R=epar(6)*eye(ny);
 gamma1=par(7:6+nx);
 gamma0v=gamma0*sigmar;
 
-    
+
 t0=clock;
 [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike
 runtime=etime(clock,t0)
+
+
 if estimation
     if unc
         par=fminunc(likefun,par,fopt,rates, hfun,filter,termModel,hfunpar);
