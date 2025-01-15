@@ -42,6 +42,8 @@ wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
 exSigmaPt = xPredSigmaPts - repmat(xPred,1,nsp);
 eySigmaPt = yPredSigmaPts - repmat(yPred,1,nsp);
 
+disp(size(wSigmaPts_ymat))
+disp(size(eySigmaPt))
 
 yPredVar  = (wSigmaPts_ymat .* eySigmaPt) * eySigmaPt' + R;
 

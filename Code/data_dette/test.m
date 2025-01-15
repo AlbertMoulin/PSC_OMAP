@@ -17,7 +17,7 @@ fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'Tol
 filter='ukf_lfnlh'; likefun='ratelikefunlf';
 
 %load the data
-load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
+load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','swapmat','-mat');
 
 
 % cdate=[mdate(end):mdate(1)]';
@@ -29,8 +29,10 @@ load(['../data_dette/nusrates_dette.mat'],'rates','mat','mdate','-mat');
 % disp(mdate(end))
 % disp('cdate : ')
 % disp(cdate)
-disp(rates(:,1:8))
+disp(rates)
 disp(mat)
+disp(mdate)
+disp(swapmat)
 
 % %load the data
 % load(['../data/nusrates.mat'],'rates','mat','mdate','-mat');
