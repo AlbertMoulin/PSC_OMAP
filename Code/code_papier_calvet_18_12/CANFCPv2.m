@@ -48,6 +48,9 @@ A=(eyex-Phi)*theta;
 ffunpar.A=A;
 xEst = theta;
 PEst = Q;
+ffunpar.Q=Q;
+
+% avec A, phi, racine(Q), on peut calculer le prochain Xt
 
 %%%%Measurement
 %%%%Measurement
