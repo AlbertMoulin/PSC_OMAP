@@ -7,8 +7,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all;
 nx=10;
-kappar=1/30; kappan=52; b=(kappan/kappar)^(1/(nx-1));
-kappar=1/30; kappan=12; b=(kappan/kappar)^(1/(nx-1))
+%kappar=1/30; kappan=52; b=(kappan/kappar)^(1/(nx-1));
+%kappar=1/30; kappan=12; b=(kappan/kappar)^(1/(nx-1));
+
+%% données résultant de l'optimisation du modèle, données de Calvet:
+kappar=exp(-3); b=exp(exp(-5.5649999999999999e-01));
 
 Kappa=zeros(nx,nx);Kappa(nx,nx)=kappar;
 kappav=zeros(nx,1); kappav(nx)=kappar;
@@ -44,7 +47,8 @@ xlabel('Time Horizon {\it\tau } (years)','FontSize',16)
 ylabel('Response Function{\it a_j(\tau)}','FontSize',16)
 legend('{\it j} = 1','{\it j} = 2-9','{\it j} = 10','Location','NorthEast')
 legend boxoff
-axis([1/52/2,100,0,1])
+%axis([1/52/2,100,0,1])
+axis tight
 set(gca,'Box','on','LineWidth',2,'FontSize', 16)
 print('-depsc', '-r70',['figlxffloading_numexmp.eps'])
 

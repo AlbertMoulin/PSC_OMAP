@@ -12,9 +12,9 @@ bt_swap=   hfunpar.bt_swap;
 swapmat=   hfunpar.swapmat;
 h =hfunpar.h; %number of payments per year
 
-dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x); % applique formule pour le prix dans le modèle
+dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x); % applique formule pour le prix dans le modèle p.944.
 swr=h*100*(1-dis)./cumsum(dis); % applique formules p.949. TRouver notre version pour dette
-y_swap=swr(swapmat*h,:);
+y_swap=swr(swapmat*h,:); % pourquoi une fonction ici ?
 
 libormat= hfunpar.libormat;
 at_libor=   hfunpar.at_libor;
@@ -24,6 +24,3 @@ bt_libor=   hfunpar.bt_libor;
 y_libor=100*(exp(repmat(at_libor,1,nsigma)+bt_libor*x) -1)./repmat(libormat,1,nsigma);
 y=[y_libor;y_swap];
 y=y(ind,:);% qu'est ce que ind ? 
-
-
-

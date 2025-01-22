@@ -9,7 +9,9 @@ clear all;format compact;format short;
 
 estimation=1; unc=0; % unconstrained optimization
 stderror=0; % sert à quoi ?
-gammavplot=1;
+gammavplot=0;
+draw = 0;
+prediction=1;
 
 tol=1e-4; nit=50000;
 fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'TolFun', tol);
@@ -42,8 +44,8 @@ if exist(['../output/par_',modelflag,'.txt'],'file');
     par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
 else
     %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
-    %par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
-    par=[  -3   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
+    par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
+    %par=[  -3   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
 
 end
 epar=exp(par);
@@ -65,12 +67,14 @@ if estimation
     if unc
         par=fminunc(likefun,par,fopt,rates, hfun,filter,termModel,hfunpar);
     else
-        par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
+        %par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
-    [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike
-    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\output\nln_',modelflag,'.txt'], 'loglike', '-ascii','-double');
+    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike %redondant ? 
+    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\mu_dd_',modelflag,'.txt'], 'mu_dd', '-ascii','-double');
+    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\y_dd_',modelflag,'.txt'], 'y_dd', '-ascii','-double');
+
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if stderror
@@ -147,4 +151,111 @@ if gammavplot
     print('-depsc','-r70', ['../CODE PAPER CALVET/JFQAR1/figlnkappavgammav_',modelflag,'.eps'])
     
 end
+
+
+if draw %draws the yield curve
+    [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
+    figure(3)
+    clf
+    maturities = [libormat; swapmat]; % Combine libormat and swapmat for maturities
+    columns = [1, 3, 10];
+    colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
+    for i = 1:length(columns)
+        subplot(3, 1, i)
+        plot(wdate, rates(:,columns(i)), 'LineWidth',1, 'Color', colors{i})
+        hold on
+        plot(wdate, y_dd(:,columns(i)), 'r--', 'LineWidth',1)
+        hold off
+        datetick('x','mmmyy')
+        grid
+        legendLabels = sprintf('Maturity %.1f years', maturities(columns(i)));
+        legend({legendLabels, ['Model ' legendLabels]}, 'Location', 'Best')
+        ylabel('Yield (%)', 'FontSize', 16) % Indicate that the y-axis is in percentage
+        set(gca,'Box','on','LineWidth',2,'FontSize', 16)
+    end
+    xlabel('Date', 'FontSize', 16) % Use the same x-axis for all subplots
+    print('-depsc','-r70', ['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'.eps'])
+    figure(4)
+    clf
+    for i = 1:length(columns)
+        subplot(3, 1, i)
+        plot(wdate, rates(:,columns(i))-y_dd(:,columns(i)), 'LineWidth',2)
+        datetick('x','mmmyy')
+        grid
+        legendLabels = sprintf('Error in Maturity %.1f years', maturities(columns(i)));
+        legend(legendLabels, 'Location', 'Best')
+        set(gca,'Box','on','LineWidth',2,'FontSize', 16)
+    end
+    print('-depsc','-r70', ['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'.eps'])
+end
+
+T=10;
+if prediction
+
+    [ffunpar, hfunpar,xEst,PEst, Q,R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
+
+
+    PredY = zeros(T, ny);
+    PredX = zeros(T, nx);
+    X=mu_dd(end,:)';
+
+    for i = 1:2
+        y = rates(5,:)';
+        test=find(isfinite(y));
+        A=ffunpar.A;
+        phi=ffunpar.Phi;
+        Q=ffunpar.Q;
+        X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
+
+        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
+        PredY(i,:) = y_suivant;	
+        PredX(i,:) = X;
+        ind=find(isfinite(y_suivant));
+    end
+
+    end
+% Plot the fitted yield over the last 10 weeks
+figure(5)
+clf
+subplot(2, 1, 1)
+plot(wdate(end-9:end), rates(end-9:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+hold on
+plot(wdate(end-9:end), y_dd(end-9:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+hold off
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+
+% Plot the predicted yield for the next 10 weeks
+subplot(2, 1, 2)
+% Plot the fitted yield over the last 10 weeks
+figure(5)
+clf
+subplot(2, 1, 1)
+plot(wdate(end-9:end), rates(end-9:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+
+% Plot the predicted yield for the next 10 weeks
+subplot(2, 1, 2)
+future_dates = wdate(end) + (1:T)' * 7; % Calculate future dates (weekly intervals)
+plot(future_dates, PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+xlabel('Weeks Ahead', 'FontSize', 16)
+title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+
+
+
+
 return

@@ -33,7 +33,7 @@ if isfinite(det(PEst))
     for t = 1:nobs
         t;
         y = data(t,:)';
-        ind=find(isfinite(y)); R2=R(ind,ind); %pick out missing data
+        ind=find(isfinite(y)); R2=R(ind,ind); %pick out missing data --> y contient les données valables
         [xEst,PEst,xPred,yPred,predErr,yVar] = feval(filter,y(ind),xEst,PEst,Q,R2,t,ind,A, F,hfun, hfunpar);
         dp=det(yVar);
         if isfinite(dp)

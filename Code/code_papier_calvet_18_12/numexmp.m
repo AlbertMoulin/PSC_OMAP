@@ -10,13 +10,18 @@ nx=10;
 kappar=1/30; kappan=52; b=(kappan/kappar)^(1/(nx-1));
 kappar=1/30; kappan=12; b=(kappan/kappar)^(1/(nx-1))
 
+%% données résultant de l'optimisation du modèle, données de Calvet:
+kappar=exp(-3); b=exp(exp(-5.5649999999999999e-01)); % paramètres issus de l'estimation
+
+% ici, code matrice sous diagonale
 Kappa=zeros(nx,nx);Kappa(nx,nx)=kappar;
 kappav=zeros(nx,1); kappav(nx)=kappar;
 for n=nx-1:-1:1
-    kappav(n)=kappav(n+1)*b;
+    kappav(n)=kappav(n+1)*b; % implémente les kappa de manière géométrique
     Kappa(n,n:n+1)=[kappav(n),-kappav(n)];
 end
 
+%code les response functions p.943 (chaque volonne est la future somme)
 A=eye(nx); A(1,1)=1/kappav(1);
 for j=1:nx-1
     for  i=1:j

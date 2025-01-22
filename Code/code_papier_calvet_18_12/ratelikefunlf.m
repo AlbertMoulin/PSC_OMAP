@@ -54,12 +54,17 @@ if isfinite(det(PEst))
     if exist(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt'],'file');
         nln0=load(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt']);
         if nlnL<nln0
-            save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln',modelflag,'.txt'], 'nlnL', '-ascii','-double');
+            save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt'], 'nlnL', '-ascii','-double');
             save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
+            save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\X_',modelflag,'.txt'], 'xEstv', '-ascii','-double');
+            save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\yFit_',modelflag,'.txt'], 'yFitv', '-ascii','-double');
+
         end
     else
         save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\nln_',modelflag,'.txt'], 'nlnL', '-ascii','-double');
         save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
+        save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\X_',modelflag,'.txt'], 'xEstv', '-ascii','-double');
+        save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\yFit_',modelflag,'.txt'], 'yFitv', '-ascii','-double');
 
     end
 else

@@ -9,23 +9,24 @@ function [ffunpar, hfunpar,xEst,PEst,Q,R] = CANFCPv2(par,hfunpar)
 % Liuren Wu, liurenwu@gmail.com
 % April, 2009 and after
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-swapmat=hfunpar.swapmat;
+swapmat=hfunpar.swapmat; %maturité des swaps
 libormat=hfunpar.libormat;
 dt=hfunpar.dt;
 ny=hfunpar.ny;
 nx=hfunpar.nx;
 
-npar=length(par(:));
-par=reshape(par, npar,1);
-eyex=eye(nx);
-epar=exp(par);
-kappar=epar(1);
-sigmar=epar(2);
-thetarp=epar(3);
-b=exp(epar(4));
-gamma0=par(5);
-R=epar(6)*eye(ny);
-gamma1=par(7:6+nx);
+%paramètres de la p.947
+npar=length(par(:)); % nombre de paramètres
+par=reshape(par, npar,1); 
+eyex=eye(nx); % nombre de facteurs = ici 10, mais peut changer en fonction du choix du modèle
+epar=exp(par); 
+kappar=epar(1); % 1 seul kappa, reste est une progression géom
+sigmar=epar(2); % factor volatility. identique pour chaque facteur
+thetarp=epar(3); % long run level of 1st factor
+b=exp(epar(4)); % adjustment speed of geomtric progression of ks. Double exponentielle ?
+gamma0=par(5); % market price of risks
+R=epar(6)*eye(ny); % est renvoyé directement, pas utilisé sinon
+gamma1=par(7:6+nx); % possiblement cas dans lequel on s'autorise à avoir des prix de facteurs de risque différents
 
 gamma0v=gamma0*sigmar;
 kappav=zeros(nx,1); kappav(nx)=kappar;
@@ -49,11 +50,11 @@ ffunpar.A=A;
 xEst = theta;
 PEst = Q;
 
-%%%%Measurement
+%%%%Measurement % implémentation de la p.944 --> calcul du prix
 %%%%Measurement
 h=2;hfunpar.h=h;
 matv=[1/h:1/h:max(swapmat)]; nm=length(matv); at_swap=zeros(nm,1); bt_swap=zeros(nm,nx); 
-[U,D]=eig(Kappas); invU=inv(U);d=diag(D);
+[U,D]=eig(Kappas); invU=inv(U);d=diag(D);% U = vecteurs propres, D = valeurs propres
 epd=exp(d); lepdv=log(epd*epd');vvs=invU*invU'; 
 invKappas=inv(Kappas); invKappaspbr=invKappas'*br;
 for k=1:nm
