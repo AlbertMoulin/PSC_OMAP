@@ -34,7 +34,7 @@ xPredVar=F*PEst*F'+Q;
 
 % Nonlinear Prediction of y
 [xPredSigmaPts, wSigmaPts,wSigmaPtsc, nsp] = SigmaPoints(xPred,xPredVar);
-yPredSigmaPts = feval(hfun,xPredSigmaPts,t,ind,hfunpar);
+yPredSigmaPts = feval(hfun,xPredSigmaPts,t,ind,hfunpar); % applique measurement equqtion
 yPred = yPredSigmaPts*wSigmaPts';
 
 % Prediction of covariances

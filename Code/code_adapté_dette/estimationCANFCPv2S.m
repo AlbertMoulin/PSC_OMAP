@@ -7,7 +7,7 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=0; % unconstrained optimization
+estimation=1; unc=1; % unconstrained optimization
 stderror=0; % sert à quoi ?
 gammavplot=1;
 
@@ -24,12 +24,12 @@ load('C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\nusrates.mat','rates',
 %disp(mat)
 
 cdate=[mdate(1):mdate(end)]';
-%wdate=cdate(weekday(cdate)==4)
+wdate=cdate(weekday(cdate)==4)
 wdate=cdate(weekday(cdate)) % on choisit tous les jours (vs le mercredi)
-% dt=1/365;
-%rates=interp1(mdate,rates(:,[4,7:end]),wdate); --> plutôt garder tous les taux
-%libormat=6;
-%mat=[6/12;swapmat];
+dt=1/365;
+rates=interp1(mdate,rates(:,[4,7:end]),wdate);% --> plutôt garder tous les taux
+libormat=6;
+mat=[6/12;swapmat];
 [T,ny]=size(rates)
 datevec([wdate(1);wdate(end)])
 lastdate=datestr(wdate(end),1);
