@@ -7,11 +7,11 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=1; % unconstrained optimization
+estimation=1; unc=1; % unconstrained optimization
 stderror=1; % sert à quoi ?
 dataDette = 1;
-gammavplot=0;
-draw =0;
+gammavplot=1;
+draw =1;
 prediction=0;
 
 
@@ -61,6 +61,7 @@ if dataDette
          2.7486204588319798e+00]';
     
     end
+    par=[-2.0   -3.0   -4.0   -0.8  -0.7 -8.0 zeros(1,nx) ]';
 else
     load('.\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
     cdate=[mdate(1):mdate(end)]';
@@ -152,7 +153,7 @@ if stderror
     gamma1=par(7:6+nx);
 
     % for unknown reasons the parameters are given as a line with our data and not as a column
-    if dataDette
+    if size(par,1)==1
         parpr=exp(par)'; 
     else
         parpr=exp(par); 
