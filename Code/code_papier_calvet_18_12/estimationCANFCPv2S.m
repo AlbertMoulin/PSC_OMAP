@@ -10,7 +10,7 @@ clear all;format compact;format short;
 estimation=0; unc=1; % unconstrained optimization
 stderror=1; % sert à quoi ?
 dataDette = 1;
-gammavplot=1;
+gammavplot=0;
 draw =0;
 prediction=0;
 
@@ -58,8 +58,7 @@ if dataDette
         -1.7148042866277728e+00
         -7.7747539375937103e-01
          6.1790848796928743e-01
-         2.7486204588319798e+00
-      ]';
+         2.7486204588319798e+00]';
     
     end
 else
@@ -91,8 +90,6 @@ else
     par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 epar=exp(par);
 kappar=epar(1);
@@ -153,8 +150,15 @@ if stderror
     gamma0=par(5);
     R=epar(6);
     gamma1=par(7:6+nx);
+
+    % for unknown reasons the parameters are given as a line with our data and not as a column
+    if dataDette
+        parpr=exp(par)'; 
+    else
+        parpr=exp(par); 
+    end
     
-    parpr=exp(par); stdpp=parpr.*stdpar;
+    stdpp=parpr.*stdpar;
     parpr(4)=b; stdpp(4)=b*epar(4)*stdpar(4);
     ind=[5,7:6+nx];
     parpr(ind)=par(ind);stdpp(ind)=stdpar(ind);
