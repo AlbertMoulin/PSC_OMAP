@@ -20,10 +20,15 @@ libormat= hfunpar.libormat;
 at_libor=   hfunpar.at_libor;
 bt_libor=   hfunpar.bt_libor;
 
+if size(libormat,1)==0
+    y=[y_swap];
+else
+    y_libor=100*(exp(repmat(at_libor,1,nsigma)+bt_libor*x) -1)./repmat(libormat,1,nsigma);
+    y=[y_libor;y_swap];
+    y=y(ind,:);
+end
 
-y_libor=100*(exp(repmat(at_libor,1,nsigma)+bt_libor*x) -1)./repmat(libormat,1,nsigma);
-y=[y_libor;y_swap];
-y=y(ind,:);
+
 
 
 

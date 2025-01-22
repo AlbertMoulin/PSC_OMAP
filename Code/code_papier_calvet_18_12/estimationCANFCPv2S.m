@@ -7,11 +7,13 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=0; % unconstrained optimization
+estimation=1; unc=1; % unconstrained optimization
 stderror=0; % sert à quoi ?
+dataDette = 1;
 gammavplot=0;
 draw = 0;
-prediction=1;
+prediction=0;
+
 
 tol=1e-4; nit=50000;
 fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'TolFun', tol);
@@ -19,35 +21,78 @@ fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'Tol
 filter='ukf_lfnlh'; likefun='ratelikefunlf';
 
 %load the data
-load('C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
 
-cdate=[mdate(1):mdate(end)]';
-wdate=cdate(weekday(cdate)==4);dt=1/52;
-rates=interp1(mdate,rates(:,[4,7:end]),wdate);
-libormat=6;
-mat=[6/12;swapmat];
-[T,ny]=size(rates)
-datevec([wdate(1);wdate(end)])
-lastdate=datestr(wdate(end),1);
-
+if dataDette
+    load('..\data_dette\nusrates_dette.mat','rates','mat','swapmat','mdate','-mat');
+    cdate=[mdate(end):mdate(1)]';
+    wdate=cdate(weekday(cdate)==4);dt=1/52;
+    rates=interp1(mdate,rates,wdate);
+    mat=[swapmat];
+    [T,ny]=size(rates)
+    datevec([wdate(1);wdate(end)])
+    lastdate=datestr(wdate(end),1);
+    %(1) Three-factor Gauss-Affine Model
+    termModel=['CANFCPv2']; hfun=['liborswap'];
+    hfunpar.dt=dt; hfunpar.ny=ny;
+    hfunpar.swapmat=swapmat; hfunpar.libormat=[];
+    nx=10;
+    hfunpar.nx=nx;
+    modelflag=[termModel,'_FS',num2str(nx)];
+    hfunpar.modelflag=modelflag;
+    if exist(['../output/par_',modelflag,'.txt'],'file');
+        par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
+    else
+        %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
+        par = [  -2.1484810243465255e+00
+        -3.1513019673402223e+00
+        -3.7827252671688236e+00
+        -7.7655162827575608e-01
+        -6.5077213734018691e-01
+        -7.7870583588909650e+00
+        -8.9128061610756737e-01
+        -7.6038747082274305e-01
+        -9.4590691999576437e-01
+        -1.3339308199433615e+00
+        -1.3261754231503742e+00
+        -1.3445743165930382e+00
+        -1.7148042866277728e+00
+        -7.7747539375937103e-01
+         6.1790848796928743e-01
+         2.7486204588319798e+00
+      ]';
+    
+    end
+else
+    load('..\code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
+    cdate=[mdate(1):mdate(end)]';
+    wdate=cdate(weekday(cdate)==4);dt=1/52;
+    rates=interp1(mdate,rates(:,[4,7:end]),wdate);
+    libormat=6;
+    mat=[6/12;swapmat];
+    [T,ny]=size(rates)
+    datevec([wdate(1);wdate(end)])
+    lastdate=datestr(wdate(end),1);
+    %(1) Three-factor Gauss-Affine Model
+    termModel=['CANFCPv2']; hfun=['liborswap'];
+    hfunpar.dt=dt; hfunpar.ny=ny;
+    hfunpar.swapmat=swapmat; hfunpar.libormat=libormat'/12;
+    nx=10;
+    hfunpar.nx=nx;
+    modelflag=[termModel,'_FS',num2str(nx)];
+    hfunpar.modelflag=modelflag;
+    if exist(['../output/par_',modelflag,'.txt'],'file');
+        par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
+    else
+        %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
+        par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
+        %par=[  -3   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
+    
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%(1) Three-factor Gauss-Affine Model
-termModel=['CANFCPv2']; hfun=['liborswap'];
-hfunpar.dt=dt; hfunpar.ny=ny;
-hfunpar.swapmat=swapmat; hfunpar.libormat=libormat'/12;
-nx=10;
-hfunpar.nx=nx;
-modelflag=[termModel,'_FS',num2str(nx)];
-hfunpar.modelflag=modelflag;
-if exist(['../output/par_',modelflag,'.txt'],'file');
-    par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
-else
-    %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
-    par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
-    %par=[  -3   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
 
-end
+
 epar=exp(par);
 kappar=epar(1);
 sigmar=epar(2);
@@ -70,10 +115,10 @@ if estimation
         %par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    save(['..\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike %redondant ? 
-    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\mu_dd_',modelflag,'.txt'], 'mu_dd', '-ascii','-double');
-    save(['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\output\y_dd_',modelflag,'.txt'], 'y_dd', '-ascii','-double');
+    save(['..\code_papier_calvet_18_12\output\mu_dd_',modelflag,'.txt'], 'mu_dd', '-ascii','-double');
+    save(['..\code_papier_calvet_18_12\output\y_dd_',modelflag,'.txt'], 'y_dd', '-ascii','-double');
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,7 +219,7 @@ if draw %draws the yield curve
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
     xlabel('Date', 'FontSize', 16) % Use the same x-axis for all subplots
-    print('-depsc','-r70', ['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'.eps'])
+    print('-depsc','-r70', ['..\code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'.eps'])
     figure(4)
     clf
     for i = 1:length(columns)
@@ -186,7 +231,7 @@ if draw %draws the yield curve
         legend(legendLabels, 'Location', 'Best')
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
-    print('-depsc','-r70', ['C:\code\PSC_OMAP\Code\code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'.eps'])
+    print('-depsc','-r70', ['..\code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'.eps'])
 end
 
 T=10;
@@ -211,9 +256,6 @@ if prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
-    end
-
-    end
 % Plot the fitted yield over the last 10 weeks
 figure(5)
 clf
@@ -254,7 +296,8 @@ ylabel('Yield (%)', 'FontSize', 16)
 xlabel('Weeks Ahead', 'FontSize', 16)
 title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
-
+    end
+end
 
 
 
