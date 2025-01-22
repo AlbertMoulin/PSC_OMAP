@@ -7,11 +7,11 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=1; % unconstrained optimization
-stderror=0; % sert à quoi ?
+estimation=0; unc=1; % unconstrained optimization
+stderror=1; % sert à quoi ?
 dataDette = 1;
-gammavplot=0;
-draw = 0;
+gammavplot=1;
+draw =0;
 prediction=0;
 
 
@@ -23,7 +23,7 @@ filter='ukf_lfnlh'; likefun='ratelikefunlf';
 %load the data
 
 if dataDette
-    load('..\data_dette\nusrates_dette.mat','rates','mat','swapmat','mdate','-mat');
+    load('.\data_dette\nusrates_dette.mat','rates','mat','swapmat','mdate','-mat');
     cdate=[mdate(end):mdate(1)]';
     wdate=cdate(weekday(cdate)==4);dt=1/52;
     rates=interp1(mdate,rates,wdate);
@@ -39,8 +39,8 @@ if dataDette
     hfunpar.nx=nx;
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
-    if exist(['../output/par_',modelflag,'.txt'],'file');
-        par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
+    if exist(['./output/par_',modelflag,'.txt'],'file');
+        par=max(-10,min(10,load(['./output/par_',modelflag,'.txt'])));
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
         par = [  -2.1484810243465255e+00
@@ -63,7 +63,7 @@ if dataDette
     
     end
 else
-    load('..\code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
+    load('.\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
     cdate=[mdate(1):mdate(end)]';
     wdate=cdate(weekday(cdate)==4);dt=1/52;
     rates=interp1(mdate,rates(:,[4,7:end]),wdate);
@@ -80,14 +80,15 @@ else
     hfunpar.nx=nx;
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
-    if exist(['../output/par_',modelflag,'.txt'],'file');
-        par=max(-10,min(10,load(['../output/par_',modelflag,'.txt'])));
+    if exist(['./output/par_',modelflag,'.txt'],'file');
+        par=max(-10,min(10,load(['./output/par_',modelflag,'.txt'])));
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
         par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
         %par=[  -3   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
     
     end
+    par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -157,6 +158,7 @@ if stderror
     parpr(4)=b; stdpp(4)=b*epar(4)*stdpar(4);
     ind=[5,7:6+nx];
     parpr(ind)=par(ind);stdpp(ind)=stdpar(ind);
+
     table= [parpr stdpp];
     ind=[1:5,7:6+nx]';
     fprintf(1,'   \n');
@@ -185,7 +187,7 @@ if gammavplot
     ylabel('\lambda_j','FontSize',16)
     grid
     set(gca,'Box','on','LineWidth',2,'FontSize', 16)
-    print('-depsc','-r70', ['../CODE PAPER CALVET//JFQAR1/figgammav_',modelflag,'.eps'])
+    print('-depsc','-r70', ['./JFQAR1/figgammav_',modelflag,'.eps'])
     
     lk=-log(kappav);
     figure(2)
@@ -193,7 +195,7 @@ if gammavplot
     ylabel('\lambda_j','FontSize',16)
     xlabel('ln \kappa_j','FontSize',16)
     set(gca,'Box','on','LineWidth',2,'FontSize', 16)
-    print('-depsc','-r70', ['../CODE PAPER CALVET/JFQAR1/figlnkappavgammav_',modelflag,'.eps'])
+    print('-depsc','-r70', ['./JFQAR1/figlnkappavgammav_',modelflag,'.eps'])
     
 end
 
@@ -202,8 +204,13 @@ if draw %draws the yield curve
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
     figure(3)
     clf
-    maturities = [libormat; swapmat]; % Combine libormat and swapmat for maturities
-    columns = [1, 3, 10];
+    maturities = mat; % Combine libormat and swapmat for maturities
+    if dataDette
+        columns = [1, 3, 6];
+    else
+        columns = [1, 3, 10];
+    end
+
     colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
     for i = 1:length(columns)
         subplot(3, 1, i)
