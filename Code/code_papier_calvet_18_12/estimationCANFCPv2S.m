@@ -7,10 +7,10 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=1; % unconstrained optimization
-stderror=1; % sert à quoi ?
+estimation=0; unc=1; % unconstrained optimization
+stderror=0; % sert à quoi ?
 dataDette = 1;
-gammavplot=1;
+gammavplot=0;
 draw =1;
 prediction=0;
 
@@ -60,7 +60,7 @@ if dataDette
         %  6.1790848796928743e-01
         %  2.7486204588319798e+00]';
         par=[-2.15   -3.15   -3.78   -0.78  -0.65 -7.79 zeros(1,nx) ]';
-    
+        disp("ERROR !! par not found")
     end
 else
     load('.\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
@@ -219,9 +219,9 @@ if draw %draws the yield curve
     colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
     for i = 1:length(columns)
         subplot(3, 1, i)
-        plot(wdate(end-100:end), rates(end-100:end,columns(i)), 'LineWidth',1, 'Color', colors{i})
+        plot(wdate(1:end), rates(1:end,columns(i)), 'LineWidth',1, 'Color', colors{i})
         hold on
-        plot(wdate(end-100:end), y_dd(end-100:end,columns(i)), 'r--', 'LineWidth',1)
+        plot(wdate(1:end), y_dd(1:end,columns(i)), 'r--', 'LineWidth',1)
         hold off
         datetick('x','mmmyy')
         grid
