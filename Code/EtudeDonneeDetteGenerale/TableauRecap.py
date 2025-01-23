@@ -43,6 +43,15 @@ for i in [1,2,3,5,7,10,15,20,25,30]:
 #         print(data[i].autocorr(lag=j))
 
 
-# save the cleaned data
-data.to_csv("Code\EtudeDonneeDetteGenerale\BDF_Tresor_2004_2008_maturites10_quotidien_cleaned.csv", index=False)
+# save the cleaned dates without the header
+data['Date'].to_csv("Code\EtudeDonneeDetteGenerale\mdate_cleaned.csv", index=False, header=False)
+
+# save the cleaned rates without the header
+data[[1,2,3,5,7,10,15,20,25,30]].to_csv("Code\EtudeDonneeDetteGenerale\mrate_cleaned.csv", index=False, header=False)
+
+# save the maturities in csv files
+maturities = pd.DataFrame([1,2,3,5,7,10,15,20,25,30])
+maturities.to_csv("Code\EtudeDonneeDetteGenerale\mat_cleaned.csv", index=False, header=False)
+maturities.to_csv("Code\EtudeDonneeDetteGenerale\swapmat.csv", index=False, header=False)
+
 
