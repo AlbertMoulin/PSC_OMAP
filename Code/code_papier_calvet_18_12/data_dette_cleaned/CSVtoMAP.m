@@ -15,4 +15,4 @@ for i = 1:length(csvFiles)
 end
 
 % Sauvegarder toutes les données dans un fichier MAT
-save('Code\code_papier_calvet_18_12\data_dette_cleaned\nusrates_dette_cleaned.mat', '-struct', 'data');
+save('.\nusrates_dette_cleaned.mat', '-struct', 'data');
