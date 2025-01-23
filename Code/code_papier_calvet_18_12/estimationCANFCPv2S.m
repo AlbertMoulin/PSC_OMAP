@@ -7,8 +7,8 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=1; % unconstrained optimization
-stderror=0; % sert à quoi ?
+estimation=1; unc=1; % unconstrained optimization
+stderror=1; % sert à quoi ?
 dataDette = 1;
 gammavplot=1;
 draw =1;
@@ -39,8 +39,8 @@ if dataDette
     hfunpar.nx=nx;
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
-    if exist(['./output/par_',modelflag,'.txt'],'file');
-        par=max(-10,min(10,load(['./output/par_',modelflag,'.txt'])));
+    if exist(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'],'file');
+        par=max(-10,min(10,load(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'])));
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
         % par = [  -2.1484810243465255e+00
@@ -80,8 +80,8 @@ else
     hfunpar.nx=nx;
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
-    if exist(['./output/par_',modelflag,'.txt'],'file');
-        par=max(-10,min(10,load(['./output/par_',modelflag,'.txt'])));
+    if exist(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'],'file');
+        par=max(-10,min(10,load(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'])));
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
         par=[  -2.9702   -4.2022   -9.9750   -0.5565   -0.1706   -9.6040   -0.2710    0.1458    0.0338    0.0892    3.7794   -0.0607   -0.2011   -0.9491   -1.6781    0.0099]';
@@ -114,10 +114,10 @@ if estimation
         %par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['..\code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    save(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike %redondant ? 
-    save(['..\code_papier_calvet_18_12\output\mu_dd_',modelflag,'.txt'], 'mu_dd', '-ascii','-double');
-    save(['..\code_papier_calvet_18_12\output\y_dd_',modelflag,'.txt'], 'y_dd', '-ascii','-double');
+    save(['code_papier_calvet_18_12\output\mu_dd_',modelflag,'.txt'], 'mu_dd', '-ascii','-double');
+    save(['code_papier_calvet_18_12\output\y_dd_',modelflag,'.txt'], 'y_dd', '-ascii','-double');
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +192,7 @@ if gammavplot
     ylabel('\lambda_j','FontSize',16)
     grid
     set(gca,'Box','on','LineWidth',2,'FontSize', 16)
-    print('-depsc','-r70', ['./JFQAR1/figgammav_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figgammav_',modelflag,'.eps'])
     
     lk=-log(kappav);
     figure(2)
@@ -200,7 +200,7 @@ if gammavplot
     ylabel('\lambda_j','FontSize',16)
     xlabel('ln \kappa_j','FontSize',16)
     set(gca,'Box','on','LineWidth',2,'FontSize', 16)
-    print('-depsc','-r70', ['./JFQAR1/figlnkappavgammav_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figlnkappavgammav_',modelflag,'.eps'])
     
 end
 
@@ -231,7 +231,7 @@ if draw %draws the yield curve
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
     xlabel('Date', 'FontSize', 16) % Use the same x-axis for all subplots
-    print('-depsc','-r70', ['..\code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'.eps'])
     figure(4)
     clf
     for i = 1:length(columns)
@@ -243,7 +243,7 @@ if draw %draws the yield curve
         legend(legendLabels, 'Location', 'Best')
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
-    print('-depsc','-r70', ['..\code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'.eps'])
 end
 
 T=10;
