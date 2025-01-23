@@ -1,0 +1,24 @@
+[1,2,3,5,7,10,15,20,25,30]
+
+de 2024-09-18 à  2007-01-02
+
+Mean for maturity 1 :
+0.7564713403880069
+Mean for maturity 2 :
+0.8271210317460317
+Mean for maturity 3 :
+0.9596258818342153
+Mean for maturity 5 :
+1.2767508818342148
+Mean for maturity 7 :
+1.5509479717813053
+Mean for maturity 10 :
+1.9507195767195766
+Mean for maturity 15 :
+2.3040672398589064
+Mean for maturity 20 :
+2.4815936948853614
+Mean for maturity 25 :
+2.58205753968254
+Mean for maturity 30 :
+2.656530864197531
