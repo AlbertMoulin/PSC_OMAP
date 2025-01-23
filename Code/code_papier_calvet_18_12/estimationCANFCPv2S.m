@@ -15,6 +15,7 @@ draw =1;
 prediction=0;
 
 
+
 tol=1e-4; nit=50000;
 fopt=optimset('Display','iter','MaxIter',nit,'MaxFunEvals',nit,'TolX', tol, 'TolFun', tol);
 
@@ -204,14 +205,14 @@ if gammavplot
     
 end
 
-
+drawperiod=length(wdate)-100:length(wdate);
 if draw %draws the yield curve
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
     figure(3)
     clf
     maturities = mat; % Combine libormat and swapmat for maturities
     if dataDette
-        columns = [1, 3, 6];
+        columns = [1, 6, 10];
     else
         columns = [1, 3, 10];
     end
@@ -219,9 +220,9 @@ if draw %draws the yield curve
     colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
     for i = 1:length(columns)
         subplot(3, 1, i)
-        plot(wdate(1:end), rates(1:end,columns(i)), 'LineWidth',1, 'Color', colors{i})
+        plot(wdate(drawperiod), rates(drawperiod), 'LineWidth',1, 'Color', colors{i})
         hold on
-        plot(wdate(1:end), y_dd(1:end,columns(i)), 'r--', 'LineWidth',1)
+        plot(wdate(drawperiod), y_dd(drawperiod), 'r--', 'LineWidth',1)
         hold off
         datetick('x','mmmyy')
         grid
@@ -236,7 +237,7 @@ if draw %draws the yield curve
     clf
     for i = 1:length(columns)
         subplot(3, 1, i)
-        plot(wdate, rates(:,columns(i))-y_dd(:,columns(i)), 'LineWidth',2)
+        plot(wdate(drawperiod), rates(drawperiod,columns(i))-y_dd(drawperiod,columns(i)), 'LineWidth',2)
         datetick('x','mmmyy')
         grid
         legendLabels = sprintf('Error in Maturity %.1f years', maturities(columns(i)));
