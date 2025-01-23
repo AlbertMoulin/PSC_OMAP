@@ -7,8 +7,8 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=1; % unconstrained optimization
-stderror=1; % sert à quoi ?
+estimation=0; unc=1; % unconstrained optimization
+stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=1;
 draw =1;
@@ -61,7 +61,6 @@ if dataDette
          2.7486204588319798e+00]';
     
     end
-    par=[-2.0   -3.0   -4.0   -0.8  -0.7 -8.0 zeros(1,nx) ]';
 else
     load('.\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
     cdate=[mdate(1):mdate(end)]';
@@ -219,9 +218,9 @@ if draw %draws the yield curve
     colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
     for i = 1:length(columns)
         subplot(3, 1, i)
-        plot(wdate, rates(:,columns(i)), 'LineWidth',1, 'Color', colors{i})
+        plot(wdate(end-100:end), rates(end-100:end,columns(i)), 'LineWidth',1, 'Color', colors{i})
         hold on
-        plot(wdate, y_dd(:,columns(i)), 'r--', 'LineWidth',1)
+        plot(wdate(end-100:end), y_dd(end-100:end,columns(i)), 'r--', 'LineWidth',1)
         hold off
         datetick('x','mmmyy')
         grid
@@ -247,6 +246,9 @@ if draw %draws the yield curve
 end
 
 T=10;
+
+
+
 if prediction
 
     [ffunpar, hfunpar,xEst,PEst, Q,R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
