@@ -2,8 +2,6 @@ import pandas as pd
 
 data = pd.read_excel("Code\EtudeDonneeDetteGenerale\BDF_Tresor_2004_2008_maturites10_quotidien.xlsx")
 
-print(data.columns)
-
 # delete data before 2007-01-01
 data = data[data['Date'] >= '2007-01-01']
 
@@ -15,13 +13,36 @@ for i in [1,2,3,5,7,10,15,20,25,30]:
     data[i] = pd.to_numeric(data[i], errors='coerce')
     data[i] = data[i].interpolate()
 
-print(data.head())
-print(data.iloc[-1])
+# print(data.head())
+# print(data.iloc[-1])
 
 
-for i in [1,2,3,5,7,10,15,20,25,30]:
-    print(f'Mean for maturity {i} :')
-    print(data[i].mean())
+# for i in [1,2,3,5,7,10,15,20,25,30]:
+#     print(f'Mean for maturity {i} :')
+#     print(data[i].mean())
+
+# calculate std dev for every maturity
+# for i in [1,2,3,5,7,10,15,20,25,30]:
+#     print(f'Standard deviation for maturity {i} :')
+#     print(data[i].std())
+
+# # calculate skewness for every maturity
+# for i in [1,2,3,5,7,10,15,20,25,30]:
+#     print(f'Skewness for maturity {i} :')
+#     print(data[i].skew())
+
+# calculate excess kurtosis for every maturity
+# for i in [1,2,3,5,7,10,15,20,25,30]:
+#     print(f'Excess kurtosis for maturity {i} :')
+#     print(data[i].kurtosis())
+
+# calculate weekly autocorrelation for every maturity of order 1,5,10,20
+# for i in [1,2,3,5,7,10,15,20,25,30]:
+#     for j in [1,5,10,20]:
+#         print(f'Autocorrelation for maturity {i} of order {j} :')
+#         print(data[i].autocorr(lag=j))
+
 
 # save the cleaned data
 data.to_csv("Code\EtudeDonneeDetteGenerale\BDF_Tresor_2004_2008_maturites10_quotidien_cleaned.csv", index=False)
+
