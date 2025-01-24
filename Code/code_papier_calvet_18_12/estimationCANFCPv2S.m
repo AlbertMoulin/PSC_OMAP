@@ -61,7 +61,6 @@ if dataDette
         %  6.1790848796928743e-01
         %  2.7486204588319798e+00]';
         par=[-2.15   -3.15   -3.78   -0.78  -0.65 -7.79 zeros(1,nx) ]';
-        disp("ERROR !! par not found")
     end
 else
     load('.\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
@@ -112,7 +111,7 @@ if estimation
     if unc
         par=fminunc(likefun,par,fopt,rates, hfun,filter,termModel,hfunpar);
     else
-        %par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
+        par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
     save(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');

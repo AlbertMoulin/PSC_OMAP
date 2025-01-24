@@ -13,6 +13,12 @@ for i in [1,2,3,5,7,10,15,20,25,30]:
     data[i] = pd.to_numeric(data[i], errors='coerce')
     data[i] = data[i].interpolate()
 
+
+print(data.describe())
+print(data.size)
+print(data.shape)
+print(data.head())
+
 # print(data.head())
 # print(data.iloc[-1])
 
@@ -46,7 +52,7 @@ for i in [1,2,3,5,7,10,15,20,25,30]:
 #convert dates to integer as a serial date number
 
 # # save the cleaned dates without the header
-data['Date'].to_csv("Code\EtudeDonneeDetteGenerale\mdate_cleaned.csv", index=False, header=False)
+# data['Date'].to_csv("Code\EtudeDonneeDetteGenerale\mdate_cleaned.csv", index=False, header=False)
 
 # # save the cleaned rates without the header
 # data[[1,2,3,5,7,10,15,20,25,30]].to_csv("Code\EtudeDonneeDetteGenerale\mrate_cleaned.csv", index=False, header=False)
