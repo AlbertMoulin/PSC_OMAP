@@ -7,9 +7,9 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=1; % unconstrained optimization
-stderror=0; % sert à quoi ?
-dataDette = 1;
+estimation=0; unc=0; % unconstrained optimization
+stderror=1; % sert à quoi ?
+dataDette = 0;
 gammavplot=0;
 draw =1;
 prediction=0;
@@ -41,7 +41,7 @@ if dataDette
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
     if exist(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'],'file');
-        par=max(-10,min(10,load(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'])));
+        par= load(['code_papier_calvet_18_12\output\par_',modelflag,'.txt']);
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
         % par = [  -2.1484810243465255e+00
@@ -63,7 +63,7 @@ if dataDette
         par=[-2.15   -3.15   -3.78   -0.78  -0.65 -7.79 zeros(1,nx) ]';
     end
 else
-    load('.\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
+    load('code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
     cdate=[mdate(1):mdate(end)]';
     wdate=cdate(weekday(cdate)==4);dt=1/52;
     rates=interp1(mdate,rates(:,[4,7:end]),wdate);
@@ -80,7 +80,7 @@ else
     hfunpar.nx=nx;
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
-    if exist(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'],'file');
+    if 1==0;
         par=max(-10,min(10,load(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'])));
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
