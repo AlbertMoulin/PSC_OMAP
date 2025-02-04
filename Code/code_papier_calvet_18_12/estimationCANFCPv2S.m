@@ -8,8 +8,8 @@
 clear all;format compact;format short;
 
 estimation=0; unc=0; % unconstrained optimization
-stderror=1; % sert à quoi ?
-dataDette = 0;
+stderror=0; % sert à quoi ?
+dataDette = 1;
 gammavplot=0;
 draw =1;
 prediction=0;
@@ -204,7 +204,7 @@ if gammavplot
     
 end
 
-drawperiod=length(wdate)-100:length(wdate);
+drawperiod=1:length(wdate);
 if draw %draws the yield curve
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
     figure(3)
@@ -219,9 +219,9 @@ if draw %draws the yield curve
     colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
     for i = 1:length(columns)
         subplot(3, 1, i)
-        plot(wdate(drawperiod), rates(drawperiod), 'LineWidth',1, 'Color', colors{i})
+        plot(wdate(drawperiod), rates(drawperiod,columns(i)), 'LineWidth',1, 'Color', colors{i})
         hold on
-        plot(wdate(drawperiod), y_dd(drawperiod), 'r--', 'LineWidth',1)
+        plot(wdate(drawperiod), y_dd(drawperiod,columns(i)), 'r--', 'LineWidth',1)
         hold off
         datetick('x','mmmyy')
         grid

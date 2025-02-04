@@ -13,15 +13,11 @@ Mean for maturity 5 :
 Mean for maturity 7 :
 1.5509479717813053
 Mean for maturity 10 :
-1.9507195767195766
-Mean for maturity 15 :
-2.3040672398589064
-Mean for maturity 20 :
-2.4815936948853614
-Mean for maturity 25 :
-2.58205753968254
-Mean for maturity 30 :
-2.656530864197531
+1.9507195767195766;
+2.3040672398589064;
+2.4815936948853614;
+2.58205753968254;
+2.656530864197531;
 
 Standard deviation for maturity 1 :
 1.6346967630133882
@@ -89,6 +85,8 @@ Excess kurtosis for maturity 30 :
 
 Autocorrelation for maturity 1 of order 1 :
 0.9997895007785795
+
+
 Autocorrelation for maturity 1 of order 5 :
 0.9988524585915237
 Autocorrelation for maturity 1 of order 10 :
@@ -159,8 +157,7 @@ Autocorrelation for maturity 25 of order 10 :
 0.9942220086805952
 Autocorrelation for maturity 25 of order 20 :
 0.9885587791489678
-Autocorrelation for maturity 30 of order 1 :
-0.9993479880676222
+Autocorrelation for maturity 30 of order 1 :	
 Autocorrelation for maturity 30 of order 5 :
 0.9967341124438631
 Autocorrelation for maturity 30 of order 10 :
