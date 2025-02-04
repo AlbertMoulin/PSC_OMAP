@@ -13,6 +13,7 @@ dataDette = 1;
 gammavplot=0;
 draw =1;
 prediction=0;
+AttemptNumber = '1';
 
 
 
@@ -114,10 +115,10 @@ if estimation
         par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
-    save(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'], 'par', '-ascii','-double');
+    save(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt'], 'par', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike %redondant ? 
-    save(['code_papier_calvet_18_12\output\mu_dd_',modelflag,'.txt'], 'mu_dd', '-ascii','-double');
-    save(['code_papier_calvet_18_12\output\y_dd_',modelflag,'.txt'], 'y_dd', '-ascii','-double');
+    save(['code_papier_calvet_18_12\output\mu_dd_',modelflag,'_',AttemptNumber,'.txt'], 'mu_dd', '-ascii','-double');
+    save(['code_papier_calvet_18_12\output\y_dd_',modelflag,'_',AttemptNumber,'.txt'], 'y_dd', '-ascii','-double');
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +193,7 @@ if gammavplot
     ylabel('\lambda_j','FontSize',16)
     grid
     set(gca,'Box','on','LineWidth',2,'FontSize', 16)
-    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figgammav_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figgammav_',modelflag,'_',AttemptNumber,'.eps'])
     
     lk=-log(kappav);
     figure(2)
@@ -200,7 +201,7 @@ if gammavplot
     ylabel('\lambda_j','FontSize',16)
     xlabel('ln \kappa_j','FontSize',16)
     set(gca,'Box','on','LineWidth',2,'FontSize', 16)
-    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figlnkappavgammav_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figlnkappavgammav_',modelflag,'_',AttemptNumber,'.eps'])
     
 end
 
@@ -231,7 +232,7 @@ if draw %draws the yield curve
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
     xlabel('Date', 'FontSize', 16) % Use the same x-axis for all subplots
-    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurve_',modelflag,'_',AttemptNumber,'.eps'])
     figure(4)
     clf
     for i = 1:length(columns)
@@ -243,7 +244,7 @@ if draw %draws the yield curve
         legend(legendLabels, 'Location', 'Best')
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
-    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'.eps'])
+    print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
 end
 
 T=10;
