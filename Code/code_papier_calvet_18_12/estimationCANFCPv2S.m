@@ -7,13 +7,13 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=0; % unconstrained optimization
-stderror=0; % sert à quoi ?
+estimation=1; unc=1; % unconstrained optimization
+stderror=1; % sert à quoi ?
 dataDette = 1;
-gammavplot=0;
+gammavplot=1;
 draw =1;
-prediction=0;
-AttemptNumber = '1';
+prediction=1;
+AttemptNumber = '2';
 
 
 
@@ -41,8 +41,8 @@ if dataDette
     hfunpar.nx=nx;
     modelflag=[termModel,'_FS',num2str(nx)];
     hfunpar.modelflag=modelflag;
-    if exist(['code_papier_calvet_18_12\output\par_',modelflag,'.txt'],'file');
-        par= load(['code_papier_calvet_18_12\output\par_',modelflag,'.txt']);
+    if exist(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt'],'file');
+        par= load(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt']);
     else
         %par=[-3.0   -4.0   -3.0   -0.2  -0.1 -9.0 zeros(1,nx) ]';
         % par = [  -2.1484810243465255e+00
@@ -62,6 +62,22 @@ if dataDette
         %  6.1790848796928743e-01
         %  2.7486204588319798e+00]';
         par=[-2.15   -3.15   -3.78   -0.78  -0.65 -7.79 zeros(1,nx) ]';
+        par = [ -3.0070989833029946e+00
+        -1.7495337125852080e+00
+        -2.0912781421666584e+00
+        -6.1876673379067371e-01
+        -1.5904547098974637e+01
+        -7.4989003768055742e+00
+        -2.1533554031062828e+01
+        -5.8851195657478330e+00
+         5.2856718899623161e+01
+        -3.2981041832912865e+01
+         2.0555286534261192e+01
+        -1.0858998713311077e+01
+        -8.9435691941760553e-01
+        -3.2050137110227759e+00
+         4.4198157228173901e-01
+        -6.1494591906360596e-01]';
     end
 else
     load('code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');

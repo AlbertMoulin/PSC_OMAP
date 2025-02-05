@@ -12,9 +12,12 @@ bt_swap=   hfunpar.bt_swap;
 swapmat=   hfunpar.swapmat;
 h =hfunpar.h; %number of payments per year
 
-dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x);
-swr=h*100*(1-dis)./cumsum(dis);
-y_swap=swr(swapmat*h,:);
+% dis=exp(-repmat(at_swap,1,nsigma)-bt_swap*x);
+% swr=h*100*(1-dis)./cumsum(dis);
+% y_swap=swr(swapmat*h,:);
+
+dis = exp(repmat(at_swap,1,nsigma)+bt_swap*x);
+y_swap = dis(h*swapmat,:).^(1./repmat(swapmat,1,nsigma)) -1;
 
 libormat= hfunpar.libormat;
 at_libor=   hfunpar.at_libor;
