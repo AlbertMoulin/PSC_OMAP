@@ -7,13 +7,13 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=1; % unconstrained optimization
+estimation=1; unc=0; % unconstrained optimization
 stderror=1; % sert à quoi ?
 dataDette = 1;
 gammavplot=1;
 draw =1;
 prediction=1;
-AttemptNumber = '2';
+AttemptNumber = '3';
 
 
 
