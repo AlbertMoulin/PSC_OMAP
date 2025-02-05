@@ -1,8 +1,8 @@
 % Liste des fichiers CSV
-csvFiles = {'/MATLAB Drive/data_dette/mat.csv', '/MATLAB Drive/data_dette/Mdates_dette.csv', '/MATLAB Drive/data_dette/rates.csv'};
+csvFiles = {'Code\code_papier_calvet_18_12\data_dette_cleaned\mat_cleaned.csv', 'Code\code_papier_calvet_18_12\data_dette_cleaned\mdate_cleaned.csv', 'Code\code_papier_calvet_18_12\data_dette_cleaned\mrate_cleaned.csv', 'Code\code_papier_calvet_18_12\data_dette_cleaned\swapmat.csv'};
 
 % Liste des fichiers CSV
-tabnames = {'mat', 'mdate', 'rates'};
+tabnames = {'mat', 'mdate', 'rates','swapmat'};
 
 % Initialisation d'une structure pour stocker les données
 data = struct();
@@ -15,4 +15,4 @@ for i = 1:length(csvFiles)
 end
 
 % Sauvegarder toutes les données dans un fichier MAT
-save('/MATLAB Drive/data_dette/nusrates_dette.mat', '-struct', 'data');
+save('.\nusrates_dette_cleaned.mat', '-struct', 'data');
