@@ -13,7 +13,7 @@ dataDette = 1;
 gammavplot=0;
 draw =1;
 prediction=0;
-AttemptNumber = '12';
+AttemptNumber = '15';
 
 
 
@@ -48,13 +48,13 @@ if dataDette
         par=[ 0 0.1 0.1 0.1 0 0 zeros(1,nx) ]';
         % Define the domains for each component
         domains = [
-        -5, 5;    % Domain for the 1st component
-        -5, 5;    % Domain for the 2nd component
-        -5, 5;   % Domain for the 3rd component
-        -5, 5;   % Domain for the 4th component
-        -5, 5; % Domain for the 5th component
-        -5, 5;  % Domain for the 6th component
-        ];
+    -2.5842812704152269e+00 * 0.7, -2.5842812704152269e+00 * 1.3;    % Domain for the 1st component
+    -2.7190626451780364e-01 * 0.7, -2.7190626451780364e-01 * 1.3;    % Domain for the 2nd component
+    -2.8906004145959932e+00 * 0.7, -2.8906004145959932e+00 * 1.3;    % Domain for the 3rd component
+    -1.0275049951638773e+00 * 0.7, -1.0275049951638773e+00 * 1.3;    % Domain for the 4th component
+    -1.3128980933987788e+00 * 0.7, -1.3128980933987788e+00 * 1.3;    % Domain for the 5th component
+    -7.8182934345253940e+00 * 0.7, -7.8182934345253940e+00 * 1.3;    % Domain for the 6th component
+]
         % Generate the random vector
         randomVector = arrayfun(@(i) domains(i,1) + (domains(i,2) - domains(i,1)) * rand, 1:size(domains, 1));
         par = [randomVector, zeros(1,nx) ]'
