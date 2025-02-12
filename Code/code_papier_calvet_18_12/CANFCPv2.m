@@ -37,7 +37,7 @@ end
 Kappatheta=zeros(nx,1);Kappatheta(nx)=kappar*thetarp;
 Kappas=Kappa-repmat(sigmar*gamma1(:)',nx,1);
 Kappathetas=Kappatheta-gamma0v;
-theta=Kappa\Kappatheta;
+theta=Kappa\Kappatheta;  % Point de départ qui ne dépend que des paramètres
 br=zeros(nx,1);br(1)=1;
 
 SS2=sigmar^2*eye(nx);

@@ -1,14 +1,15 @@
-termModel=['CANFCPv2']; hfun=['liborswap'];
-hfunpar.dt=dt; hfunpar.ny=ny;
-hfunpar.swapmat=swapmat; hfunpar.libormat=[];
-nx=10;
-hfunpar.nx=nx;
-modelflag=[termModel,'_FS',num2str(nx)];
-hfunpar.modelflag=modelflag;
-par=[-2.5779516699490470e+00 -2.7279929650145163e-01 -2.8906286791881035e+00 -1.0241855036886078e+00 -1.3121658959363447e+00 -7.8233189124250764e+00 zeros(1,nx) ]';
-fv = feval(termModel,par,hfunpar)
-disp(fv)
+% Define the domains for each component
+domains = [
+    0, 1;    % Domain for the 1st component
+    -5, 5;   % Domain for the 2nd component
+    10, 20;  % Domain for the 3rd component
+    -10, 0;  % Domain for the 4th component
+    100, 200;% Domain for the 5th component
+    0.5, 1.5 % Domain for the 6th component
+];
 
-disp(fv.Phi)
-disp(fv.A)
-disp(fv.Q)
+% Generate the random vector
+randomVector = arrayfun(@(i) domains(i,1) + (domains(i,2) - domains(i,1)) * rand, 1:size(domains, 1));
+
+% Display the random vector
+disp(randomVector);

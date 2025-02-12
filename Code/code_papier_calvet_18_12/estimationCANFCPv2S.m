@@ -8,12 +8,12 @@
 clear all;format compact;format short;
 
 estimation=1; unc=1; % unconstrained optimization
-stderror=1; % sert à quoi ?
+stderror=0; % sert à quoi ?
 dataDette = 1;
-gammavplot=1;
+gammavplot=0;
 draw =1;
 prediction=0;
-AttemptNumber = '7';
+AttemptNumber = '12';
 
 
 
@@ -45,6 +45,19 @@ if dataDette
         par= load(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt']);
     else
         par=[-2.5779516699490470e+00 -2.7279929650145163e-01 -2.8906286791881035e+00 -1.0241855036886078e+00 -1.3121658959363447e+00 -7.8233189124250764e+00 zeros(1,nx) ]';
+        par=[ 0 0.1 0.1 0.1 0 0 zeros(1,nx) ]';
+        % Define the domains for each component
+        domains = [
+        -5, 5;    % Domain for the 1st component
+        -5, 5;    % Domain for the 2nd component
+        -5, 5;   % Domain for the 3rd component
+        -5, 5;   % Domain for the 4th component
+        -5, 5; % Domain for the 5th component
+        -5, 5;  % Domain for the 6th component
+        ];
+        % Generate the random vector
+        randomVector = arrayfun(@(i) domains(i,1) + (domains(i,2) - domains(i,1)) * rand, 1:size(domains, 1));
+        par = [randomVector, zeros(1,nx) ]'
     end
 else
     load('code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
@@ -190,7 +203,30 @@ end
 
 drawperiod=1:length(wdate);
 if draw %draws the yield curve
+
+    % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
+    % TO COMPLETE
+    drawperiod=1:length(wdate);
+
+    % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
+    figure(6)
+    clf
+    columns = [1, 3, 10];
+    colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
+    for i = 1:length(columns)
+        subplot(3, 1, i)
+        plot(wdate(drawperiod), mu_dd(drawperiod, columns(i)), 'Color', colors{i}, 'LineWidth', 2)
+        xlabel('Time', 'FontSize', 16)
+        ylabel(['Factor number :', num2str(columns(i))], 'FontSize', 16)
+        datetick('x','mmmyy')
+        grid on
+        set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+    end
+    print('-depsc', '-r70', ['code_papier_calvet_18_12\JFQAR1\rowstotime', modelflag, '_', AttemptNumber, '.eps'])
+
+
+    
     figure(3)
     clf
     maturities = mat; % Combine libormat and swapmat for maturities
