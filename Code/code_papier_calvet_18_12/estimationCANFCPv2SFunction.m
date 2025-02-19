@@ -61,6 +61,9 @@ if estimation
         par=fminsearch(likefun,par,fopt,rates,hfun,filter,termModel,hfunpar);
     end
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates, hfun,filter,termModel,hfunpar);
+    save(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt'], 'par', '-ascii','-double');
+    %save the loglikelihood value
+    save(['code_papier_calvet_18_12\output\nln_',modelflag,'_',AttemptNumber,'.txt'], 'loglike', '-ascii','-double');
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike %redondant ? 
 
 end

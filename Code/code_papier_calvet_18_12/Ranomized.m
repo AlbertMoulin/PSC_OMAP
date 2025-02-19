@@ -28,7 +28,7 @@ for i = 1:num_simulations
     perturbed_par = initial_par + perturbation_scale * randn(size(initial_par));
     
     % Evaluate the log-likelihood function
-    loglike_values(i) = estimationCANFCPv2SFunction(perturbed_par, 1, 1, 0, 0, 0, 0);
+    loglike_values(i) = estimationCANFCPv2SFunction(perturbed_par, 1, 1, 0, 0, 0, i+ 100);
 end
 
 % Display the results
@@ -45,3 +45,6 @@ xlabel('Log-Likelihood');
 ylabel('Frequency');
 title('Distribution of Log-Likelihood Values from Monte Carlo Simulation');
 grid on;
+
+
+
