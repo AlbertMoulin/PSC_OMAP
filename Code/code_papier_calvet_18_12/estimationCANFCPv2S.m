@@ -7,13 +7,13 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=1; % unconstrained optimization
+estimation=0; unc=0; % unconstrained optimization
 stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
 draw =1;
 prediction=0;
-AttemptNumber = '15';
+AttemptNumber = '22';
 
 
 
@@ -206,7 +206,7 @@ if draw %draws the yield curve
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     % TO COMPLETE
-    drawperiod=1:length(wdate);
+    drawperiod=1:52;
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
@@ -231,14 +231,14 @@ if draw %draws the yield curve
     clf
     maturities = mat; % Combine libormat and swapmat for maturities
     if dataDette
-        columns = [1, 6, 10];
+        columns = [1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10];
     else
         columns = [1, 3, 10];
     end
 
-    colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0]}; % Dark blue, dark green, black
+    colors = {[0 0 0.5], [0 0.5 0], [0.5 0 0],[0.5 0 0],[0.5 0 0],[0.5 0 0],[0.5 0 0],[0.5 0 0],[0.5 0 0],[0.5 0 0] }; % Dark blue, dark green, black
     for i = 1:length(columns)
-        subplot(3, 1, i)
+        subplot(length(columns), 1, i)
         plot(wdate(drawperiod), rates(drawperiod,columns(i)), 'LineWidth',1, 'Color', colors{i})
         hold on
         plot(wdate(drawperiod), y_dd(drawperiod,columns(i)), 'r--', 'LineWidth',1)
@@ -255,7 +255,7 @@ if draw %draws the yield curve
     figure(4)
     clf
     for i = 1:length(columns)
-        subplot(3, 1, i)
+        subplot(length(columns), 1, i)
         plot(wdate(drawperiod), rates(drawperiod,columns(i))-y_dd(drawperiod,columns(i)), 'LineWidth',2)
         datetick('x','mmmyy')
         grid
