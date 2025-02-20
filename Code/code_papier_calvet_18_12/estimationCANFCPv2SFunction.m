@@ -53,6 +53,9 @@ gamma0v=gamma0*sigmar;
 %% Ici, évalue la vraissemblance pour un filtre et un modèle donné.
 t0=clock;
 [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);loglike
+if isnan(loglike)
+    return
+end
 runtime=etime(clock,t0)
 if estimation
     if unc

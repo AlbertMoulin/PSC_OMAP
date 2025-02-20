@@ -1,5 +1,5 @@
 % filepath: /d:/Albert/Polytechnique/PSC/Code/code_papier_calvet_18_12/Randomized.m
-
+start = 283; % Start index of the parameters
 % Monte Carlo simulation around the initial point par
 initial_par = [ -2.4213571986670770e+00
     -2.6485877467981833e-01
@@ -18,17 +18,18 @@ initial_par = [ -2.4213571986670770e+00
     -7.1531751170157329e-04
     -2.1388395992296989e-02];
 
-num_simulations = 1000; % Number of Monte Carlo simulations
-perturbation_scale = 0.1; % Scale of the perturbation
+par = zeros(16, 1);
+
+num_simulations = 100; % Number of Monte Carlo simulations
+perturbation_scale = 5; % Scale of the perturbation
 
 loglike_values = zeros(num_simulations, 1);
 
-for i = 1:num_simulations
+for i = start : start + num_simulations
     % Perturb the initial parameters
     perturbed_par = initial_par + perturbation_scale * randn(size(initial_par));
-    
     % Evaluate the log-likelihood function
-    loglike_values(i) = estimationCANFCPv2SFunction(perturbed_par, 1, 1, 0, 0, 0, num2str(i+ 100) );
+    loglike_values(i) = estimationCANFCPv2SFunction(perturbed_par, 1, 1, 0, 0, 0, 0, num2str(100+i));
 end
 
 % Display the results
