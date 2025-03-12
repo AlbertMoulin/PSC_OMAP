@@ -7,13 +7,13 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=0; % unconstrained optimization
-stderror=0; % sert à quoi ?
+estimation=1; unc=1; % unconstrained optimization
+stderror=1; % sert à quoi ?
 dataDette = 1;
-gammavplot=0;
+gammavplot=1;
 draw =1;
-prediction=0;
-AttemptNumber = '22';
+prediction=1;
+AttemptNumber = '110';
 
 
 
@@ -44,20 +44,22 @@ if dataDette
     if exist(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt'],'file');
         par= load(['code_papier_calvet_18_12\output\par_',modelflag,'_',AttemptNumber,'.txt']);
     else
-        par=[-2.5779516699490470e+00 -2.7279929650145163e-01 -2.8906286791881035e+00 -1.0241855036886078e+00 -1.3121658959363447e+00 -7.8233189124250764e+00 zeros(1,nx) ]';
-        par=[ 0 0.1 0.1 0.1 0 0 zeros(1,nx) ]';
-        % Define the domains for each component
-        domains = [
-    -2.5842812704152269e+00 * 0.7, -2.5842812704152269e+00 * 1.3;    % Domain for the 1st component
-    -2.7190626451780364e-01 * 0.7, -2.7190626451780364e-01 * 1.3;    % Domain for the 2nd component
-    -2.8906004145959932e+00 * 0.7, -2.8906004145959932e+00 * 1.3;    % Domain for the 3rd component
-    -1.0275049951638773e+00 * 0.7, -1.0275049951638773e+00 * 1.3;    % Domain for the 4th component
-    -1.3128980933987788e+00 * 0.7, -1.3128980933987788e+00 * 1.3;    % Domain for the 5th component
-    -7.8182934345253940e+00 * 0.7, -7.8182934345253940e+00 * 1.3;    % Domain for the 6th component
-]
-        % Generate the random vector
-        randomVector = arrayfun(@(i) domains(i,1) + (domains(i,2) - domains(i,1)) * rand, 1:size(domains, 1));
-        par = [randomVector, zeros(1,nx) ]'
+        par=[  -2.5556001063807963e+00
+        -2.6384878563863501e-01
+        -8.5619137343435925e-01
+        -1.0498554832404401e+00
+        -1.2585177801722682e+00
+        -7.8172780580145824e+00
+        -6.2807525243175635e-02
+         1.5485760897156067e-01
+         4.0269433282983880e-02
+        -3.0223589931092056e-02
+        -9.0114087099664231e-02
+        -5.5738327012341410e-03
+        -4.9786674741841633e-02
+         1.4841023869127912e-02
+        -6.9679602544003147e-03
+        -1.1378875655991154e-02]';
     end
 else
     load('code_papier_calvet_18_12\data\nusrates.mat','rates','mat','swapmat','libormat','mdate','-mat');
