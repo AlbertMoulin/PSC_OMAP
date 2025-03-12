@@ -85,8 +85,6 @@ Excess kurtosis for maturity 30 :
 
 Autocorrelation for maturity 1 of order 1 :
 0.9997895007785795
-
-
 Autocorrelation for maturity 1 of order 5 :
 0.9988524585915237
 Autocorrelation for maturity 1 of order 10 :

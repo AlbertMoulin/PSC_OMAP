@@ -13,7 +13,7 @@ dataDette = 1;
 gammavplot=0;
 draw =1;
 prediction=0;
-AttemptNumber = '22';
+AttemptNumber = '110';
 
 
 
@@ -201,12 +201,11 @@ if gammavplot
     
 end
 
-drawperiod=1:length(wdate);
 if draw %draws the yield curve
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     % TO COMPLETE
-    drawperiod=1:100;
+    drawperiod=1:T;
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
