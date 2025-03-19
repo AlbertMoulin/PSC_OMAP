@@ -7,13 +7,13 @@
 
 clear all;format compact;format short;
 
-estimation=0; unc=0; % unconstrained optimization
+estimation=1; unc=1; % unconstrained optimization
 stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
 draw =1;
 prediction=0;
-AttemptNumber = '110';
+AttemptNumber = '31';
 
 
 
@@ -205,7 +205,7 @@ if draw %draws the yield curve
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     % TO COMPLETE
-    drawperiod=1:T;
+    drawperiod=1:4;
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
@@ -230,7 +230,7 @@ if draw %draws the yield curve
     clf
     maturities = mat; % Combine libormat and swapmat for maturities
     if dataDette
-        columns = [1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10];
+        columns = [1, 3 , 9 , 10];
     else
         columns = [1, 3, 10];
     end

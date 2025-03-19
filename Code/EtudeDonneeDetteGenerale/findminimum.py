@@ -2,7 +2,7 @@ import os
 
 L = []
 
-for i in range(100,472):
+for i in range(2,37):
     # check if file D:\Albert\Polytechnique\PSC\Code\code_papier_calvet_18_12\output\nln_CANFCPv2_FS10_' + i + '.txt exists
     if os.path.isfile(r'D:\Albert\Polytechnique\PSC\Code\code_papier_calvet_18_12\output\nln_CANFCPv2_FS10_' + str(i) + '.txt'):
         # read the file
@@ -13,7 +13,3 @@ for i in range(100,472):
             file.close()
 
 print(min(L, key=lambda x: x[1]))
-
-# print the 10 lowest values
-L.sort(key=lambda x: x[1])
-print(L)
