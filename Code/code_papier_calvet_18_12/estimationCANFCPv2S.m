@@ -354,7 +354,7 @@ if prediction_before
     gamma1=par(7:6+nx);
 
     for i = 1:T
-        y = rates(5,:)';
+        y = rates(5,1:end-T)';
         test=find(isfinite(y));
         A=ffunpar.A;
         phi=ffunpar.Phi;
@@ -367,7 +367,7 @@ if prediction_before
         ind=find(isfinite(y_suivant));
     end
 
-figure(5)
+figure(6)
 clf
 subplot(2, 1, 1)
 plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
@@ -383,14 +383,13 @@ set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 
 % Plot the predicted yield for the next 10 weeks
 subplot(2, 1, 2)
-future_dates = wdate(end) + (1:T)' * 7; % Calculate future dates (weekly intervals)
-plot(future_dates, PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+plot(wdate(end-T+1:end), PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
 ylabel('Yield (%)', 'FontSize', 16)
 xlabel('Weeks Ahead', 'FontSize', 16)
-title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
+title('Predicted Yield for the last 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 end
 
