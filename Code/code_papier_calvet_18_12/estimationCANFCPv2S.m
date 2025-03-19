@@ -12,7 +12,8 @@ stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
 draw =0;
-prediction=1;
+prediction_after=1;
+prediction_before=1;
 AttemptNumber = '31';
 
 
@@ -269,7 +270,7 @@ T=100;
 
 
 
-if prediction
+if prediction_after
 
     [ffunpar, hfunpar,xEst,PEst, Q,R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
 
@@ -331,7 +332,67 @@ title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 end
 
+if prediction_before
 
+    [ffunpar, hfunpar,xEst,PEst, Q,R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
+
+
+    PredY = zeros(T, ny);
+    PredX = zeros(T, nx);
+    X=mu_dd(end,:)';
+
+    npar=length(par(:));
+    par=reshape(par, npar,1);
+    eyex=eye(nx);
+    epar=exp(par);
+    kappar=epar(1);
+    sigmar=epar(2);
+    thetarp=epar(3);
+    b=exp(epar(4));
+    gamma0=par(5);
+    R=epar(6)*eye(ny);
+    gamma1=par(7:6+nx);
+
+    for i = 1:T
+        y = rates(5,:)';
+        test=find(isfinite(y));
+        A=ffunpar.A;
+        phi=ffunpar.Phi;
+        Q=ffunpar.Q;
+        X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
+
+        y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1); %measurement prediction
+        PredY(i,:) = y_suivant;	
+        PredX(i,:) = X;
+        ind=find(isfinite(y_suivant));
+    end
+
+figure(5)
+clf
+subplot(2, 1, 1)
+plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+hold on
+plot(wdate(end-T:end), y_dd(end-T:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+hold off
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+
+% Plot the predicted yield for the next 10 weeks
+subplot(2, 1, 2)
+future_dates = wdate(end) + (1:T)' * 7; % Calculate future dates (weekly intervals)
+plot(future_dates, PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+xlabel('Weeks Ahead', 'FontSize', 16)
+title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+end
 
 
 return
