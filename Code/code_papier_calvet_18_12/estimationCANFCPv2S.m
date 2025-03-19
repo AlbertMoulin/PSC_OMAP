@@ -290,7 +290,7 @@ if prediction
     R=epar(6)*eye(ny);
     gamma1=par(7:6+nx);
 
-    for i = 1:2
+    for i = 1:T
         y = rates(5,:)';
         test=find(isfinite(y));
         A=ffunpar.A;
@@ -302,13 +302,14 @@ if prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
+
 % Plot the fitted yield over the last 10 weeks
-figure(5)
+figure(18)
 clf
 subplot(2, 1, 1)
-plot(wdate(end-9:end), rates(end-9:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 hold on
-plot(wdate(end-9:end), y_dd(end-9:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+plot(wdate(end-T:end), y_dd(end-T:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
 hold off
 datetick('x', 'mmmyy')
 grid
@@ -323,7 +324,7 @@ subplot(2, 1, 2)
 figure(5)
 clf
 subplot(2, 1, 1)
-plot(wdate(end-9:end), rates(end-9:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
