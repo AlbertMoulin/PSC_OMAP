@@ -7,7 +7,7 @@
 
 clear all;format compact;format short;
 
-estimation=1; unc=1; % unconstrained optimization
+estimation=0; unc=0; % unconstrained optimization
 stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
@@ -205,7 +205,7 @@ if draw %draws the yield curve
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     % TO COMPLETE
-    drawperiod=1:4;
+    drawperiod=1:T;
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
@@ -278,6 +278,18 @@ if prediction
     PredX = zeros(T, nx);
     X=mu_dd(end,:)';
 
+    npar=length(par(:));
+    par=reshape(par, npar,1);
+    eyex=eye(nx);
+    epar=exp(par);
+    kappar=epar(1);
+    sigmar=epar(2);
+    thetarp=epar(3);
+    b=exp(epar(4));
+    gamma0=par(5);
+    R=epar(6)*eye(ny);
+    gamma1=par(7:6+nx);
+
     for i = 1:2
         y = rates(5,:)';
         test=find(isfinite(y));
@@ -286,7 +298,7 @@ if prediction
         Q=ffunpar.Q;
         X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
 
-        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
+        y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1); %measurement prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
