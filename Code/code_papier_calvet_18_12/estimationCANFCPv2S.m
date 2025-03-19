@@ -265,7 +265,7 @@ if draw %draws the yield curve
     print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
 end
 
-T=10;
+T=100;
 
 
 
