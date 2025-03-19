@@ -11,8 +11,8 @@ estimation=0; unc=0; % unconstrained optimization
 stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
-draw =1;
-prediction=0;
+draw =0;
+prediction=1;
 AttemptNumber = '31';
 
 
@@ -302,6 +302,7 @@ if prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
+    end
 
 % Plot the fitted yield over the last 10 weeks
 figure(18)
@@ -343,8 +344,8 @@ ylabel('Yield (%)', 'FontSize', 16)
 xlabel('Weeks Ahead', 'FontSize', 16)
 title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
-    end
 end
+
 
 
 
