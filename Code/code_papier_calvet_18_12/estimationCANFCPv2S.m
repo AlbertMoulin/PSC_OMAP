@@ -304,28 +304,13 @@ if prediction
         ind=find(isfinite(y_suivant));
     end
 
-% Plot the fitted yield over the last 10 weeks
-figure(18)
+figure(5)
 clf
 subplot(2, 1, 1)
 plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 hold on
 plot(wdate(end-T:end), y_dd(end-T:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
 hold off
-datetick('x', 'mmmyy')
-grid
-legend('show', 'Location', 'Best')
-ylabel('Yield (%)', 'FontSize', 16)
-title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
-set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
-
-% Plot the predicted yield for the next 10 weeks
-subplot(2, 1, 2)
-% Plot the fitted yield over the last 10 weeks
-figure(5)
-clf
-subplot(2, 1, 1)
-plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
