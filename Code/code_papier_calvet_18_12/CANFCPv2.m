@@ -34,10 +34,10 @@ for n=nx-1:-1:1
     kappav(n)=kappav(n+1)*b; 
     Kappa(n,n:n+1)=[kappav(n),-kappav(n)];
 end
-Kappatheta=zeros(nx,1);Kappatheta(nx)=kappar*thetarp;
+Kappatheta=zeros(nx,1);Kappatheta(nx)=kappar*thetarp; % sembl
 Kappas=Kappa-repmat(sigmar*gamma1(:)',nx,1);
 Kappathetas=Kappatheta-gamma0v;
-theta=Kappa\Kappatheta;  % Point de départ qui ne dépend que des paramètres
+theta=Kappa\Kappatheta;  % Point de départ qui ne dépend que des paramètres. Semble correpsondre à choisir X0 poru annuler k(theta - X0) dans l'équation (2)
 br=zeros(nx,1);br(1)=1;
 
 SS2=sigmar^2*eye(nx);
