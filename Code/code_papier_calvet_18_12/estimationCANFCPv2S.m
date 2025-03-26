@@ -12,8 +12,9 @@ stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
 draw =0;
-prediction_after=1;
+prediction_after=0;
 prediction_before=1;
+info = 900;
 AttemptNumber = '31';
 
 
@@ -266,7 +267,7 @@ if draw %draws the yield curve
     print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
 end
 
-T=100;
+T=900;
 
 
 
@@ -334,12 +335,12 @@ end
 
 if prediction_before
 
-    [ffunpar, hfunpar,xEst,PEst, Q,R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
+    [ffunpar, hfunpar, xEst, PEst, Q, R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
 
 
     PredY = zeros(T, ny);
     PredX = zeros(T, nx);
-    X=mu_dd(end,:)';
+    X=mu_dd(end-T,:)';
 
     npar=length(par(:));
     par=reshape(par, npar,1);
@@ -352,15 +353,18 @@ if prediction_before
     gamma0=par(5);
     R=epar(6)*eye(ny);
     gamma1=par(7:6+nx);
+    y = rates(5,1:end-T)';
 
     for i = 1:T
-        y = rates(5,1:end-T)';
+        
         test=find(isfinite(y));
         A=ffunpar.A;
         phi=ffunpar.Phi;
         Q=ffunpar.Q;
         X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
-
+        if mod(i,info) == 0
+            X=mu_dd(end-T+i,:)';
+        end
         y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1); %measurement prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
@@ -380,7 +384,6 @@ legend('show', 'Location', 'Best')
 ylabel('Yield (%)', 'FontSize', 16)
 title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
-
 % Plot the predicted yield for the next 10 weeks
 subplot(2, 1, 2)
 plot(wdate(end-T+1:end), PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
