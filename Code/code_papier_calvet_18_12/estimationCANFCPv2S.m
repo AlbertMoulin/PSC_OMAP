@@ -14,7 +14,8 @@ gammavplot=0;
 draw =0;
 prediction_after=0;
 prediction_before=1;
-info = 900;
+info = 4;
+Tpred = 357;
 AttemptNumber = '31';
 
 
@@ -267,9 +268,7 @@ if draw %draws the yield curve
     print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
 end
 
-T=900;
-
-
+T=Tpred;
 
 if prediction_after
 
@@ -300,7 +299,8 @@ if prediction_after
         Q=ffunpar.Q;
         X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
 
-        y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1); %measurement prediction
+        % y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
+        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
@@ -362,15 +362,22 @@ if prediction_before
         phi=ffunpar.Phi;
         Q=ffunpar.Q;
         X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
+        % X = A + phi*X;
         if mod(i,info) == 0
             X=mu_dd(end-T+i,:)';
         end
-        y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1); %measurement prediction
+        y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
+        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
     end
+%% calculate mean absolute error between PredY and rates 
+    MAE = mean(abs(PredY - rates(end-T+1:end, :)));
+    MAE = mean(MAE);
+    MAE
 
+%%
 figure(6)
 clf
 subplot(2, 1, 1)
