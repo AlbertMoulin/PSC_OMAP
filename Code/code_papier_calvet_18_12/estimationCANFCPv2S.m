@@ -8,14 +8,19 @@
 clear all;format compact;format short;
 
 estimation=0; unc=0; % unconstrained optimization
-stderror=0; % sert à quoi ?
+stderror=1; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
-draw =0;
+draw =1;
+
 prediction_after=0;
-prediction_before=1;
-info = 4;
-Tpred = 357;
+prediction_before=0;
+info = 52;
+Tpred_before = 357;
+plot_maturity = 10; % Set to 1 to plot maturity
+Tpred_after = 52;
+
+
 AttemptNumber = '31';
 
 
@@ -268,7 +273,7 @@ if draw %draws the yield curve
     print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
 end
 
-T=Tpred;
+T=Tpred_after;
 
 if prediction_after
 
@@ -277,7 +282,7 @@ if prediction_after
 
     PredY = zeros(T, ny);
     PredX = zeros(T, nx);
-    X=mu_dd(end,:)';
+    xPred = mu_dd(end,:)';
 
     npar=length(par(:));
     par=reshape(par, npar,1);
@@ -290,26 +295,39 @@ if prediction_after
     gamma0=par(5);
     R=epar(6)*eye(ny);
     gamma1=par(7:6+nx);
-
+    Q=ffunpar.Q;
+    Pest = Q;
+    F=ffunpar.Phi;
+    ind = 1; % qui est ind ???
     for i = 1:T
         y = rates(5,:)';
-        test=find(isfinite(y));
         A=ffunpar.A;
         phi=ffunpar.Phi;
-        Q=ffunpar.Q;
-        X = A + phi*X ; %state propagation 
-        % + sqrt(Q)*randn(nx,1)
+        
+        xPred = A + phi*xPred ; %state propagation 
+        xPredVar=F*PEst*F'+Q;
+        [xPredSigmaPts, wSigmaPts,wSigmaPtsc, nsp] = SigmaPoints(xPred,xPredVar);
+        yPredSigmaPts = feval(hfun,xPredSigmaPts,0,0,hfunpar);
+        yPred = yPredSigmaPts*wSigmaPts';
 
-        % y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
-        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
-        PredY(i,:) = y_suivant;	
-        PredX(i,:) = X;
-        ind=find(isfinite(y_suivant));
+        PredY(i,:) = yPred;	
+        PredX(i,:) = xPred;
+        ind=find(isfinite(yPred));
+        
+        % Prediction of covariances
+        wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
+        exSigmaPt = xPredSigmaPts - repmat(xPred,1,nsp);
+        eySigmaPt = yPredSigmaPts - repmat(yPred,1,nsp);
+        yPredVar  = (wSigmaPts_ymat .* eySigmaPt) * eySigmaPt' + R;
+        xyPredVar = exSigmaPt * (wSigmaPts_ymat .* eySigmaPt)';
+
+        %K  = xyPredVar*pinv(yPredVar);
+        K  = xyPredVar/(yPredVar);
+        PEst = xPredVar - K*yPredVar*K';
     end
 
 figure(5)
 clf
-subplot(2, 1, 1)
 plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 hold on
 plot(wdate(end-T:end), y_dd(end-T:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
@@ -321,18 +339,20 @@ ylabel('Yield (%)', 'FontSize', 16)
 title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 
-% Plot the predicted yield for the next 10 weeks
-subplot(2, 1, 2)
 future_dates = wdate(end) + (1:T)' * 7; % Calculate future dates (weekly intervals)
-plot(future_dates, PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+hold on
+plot(future_dates, PredY(:, 1), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+hold off
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
 ylabel('Yield (%)', 'FontSize', 16)
 xlabel('Weeks Ahead', 'FontSize', 16)
-title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
+title(['Predicted Yield for the Next ', num2str(T), ' Weeks'], 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 end
+
+T = Tpred_before;
 
 if prediction_before
 
@@ -341,7 +361,7 @@ if prediction_before
 
     PredY = zeros(T, ny);
     PredX = zeros(T, nx);
-    X=mu_dd(end-T,:)';
+    xEst=mu_dd(end-T,:)';
 
     npar=length(par(:));
     par=reshape(par, npar,1);
@@ -354,27 +374,48 @@ if prediction_before
     gamma0=par(5);
     R=epar(6)*eye(ny);
     gamma1=par(7:6+nx);
-    y = rates(5,1:end-T)';
+    A=ffunpar.A;
+    F=ffunpar.Phi;
+    Q=ffunpar.Q;
 
     for i = 1:T
         
-        test=find(isfinite(y));
-        A=ffunpar.A;
-        phi=ffunpar.Phi;
-        Q=ffunpar.Q;
-        % X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
-        X = A + phi*X;
-        if mod(i,info) == 0
-            X= mu_dd(end-T+i,:)' ;
+        %Linear prediction on X
+        xPred=A+F*xEst;
+        xPredVar=F*PEst*F'+Q;
+
+        % Nonlinear Prediction of y
+        [xPredSigmaPts, wSigmaPts,wSigmaPtsc, nsp] = SigmaPoints(xPred,xPredVar);
+
+        yPredSigmaPts = feval(hfun,xPredSigmaPts,0,0,hfunpar);
+        yPred = yPredSigmaPts*wSigmaPts';
+
+        % Prediction of covariances
+        wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
+        exSigmaPt = xPredSigmaPts - repmat(xPred,1,nsp);
+        eySigmaPt = yPredSigmaPts - repmat(yPred,1,nsp);
+        yPredVar  = (wSigmaPts_ymat .* eySigmaPt) * eySigmaPt' + R;
+        xyPredVar = exSigmaPt * (wSigmaPts_ymat .* eySigmaPt)';
+
+        PredY(i,:) = yPred';	
+        PredX(i,:) = xPred;
+        ind=find(isfinite(yPred));
+        if mod(i, info)==0
+            K  = xyPredVar/(yPredVar);
+            innovation = rates(size(rates,1)-T+i) - yPred;
+            xEst = xPred + K*innovation;
+            PEst = xPredVar - K*yPredVar*K';
+        else
+            K = xyPredVar/(yPredVar);
+            xEst = xPred;
+            PEst = xPredVar - K*yPredVar*K';
         end
-        % y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
-        y_suivant = liborswap(X, [1,2], test, hfunpar); %measurement prediction
-        PredY(i,:) = y_suivant;	
-        PredX(i,:) = X;
-        ind=find(isfinite(y_suivant));
+        %K  = xyPredVar*pinv(yPredVar);
+        
+
     end
-%% calculate mean absolute error between PredY and rates 
-    MAE = mean(abs(PredY - rates(end-T+1:end, :)));
+%% calculate mean absolute error between PredY and rates   
+    MAE = mean(abs( PredY(10:end, plot_maturity) - rates(end-T+10:end, plot_maturity) ));
     MAE = mean(MAE);
     MAE
 
@@ -382,25 +423,25 @@ if prediction_before
 figure(6)
 clf
 subplot(2, 1, 1)
-plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+plot(wdate(end-T:end), rates(end-T:end, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 hold on
-plot(wdate(end-T:end), y_dd(end-T:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+plot(wdate(end-T:end), y_dd(end-T:end, plot_maturity), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
 hold off
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
 ylabel('Yield (%)', 'FontSize', 16)
-title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
+title(['Fitted Yield over the Last ', num2str(T), ' Weeks'], 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 % Plot the predicted yield for the next 10 weeks
 subplot(2, 1, 2)
-plot(wdate(end-T+1:end), PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+plot(wdate(end-T+1:end), PredY(:, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
 ylabel('Yield (%)', 'FontSize', 16)
 xlabel('Weeks Ahead', 'FontSize', 16)
-title('Predicted Yield for the last 10 Weeks', 'FontSize', 16)
+title(['Predicted Yield over the Last ', num2str(T), ' Weeks, recalibrated every ',num2str(info),' Weeks'], 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 end
 
