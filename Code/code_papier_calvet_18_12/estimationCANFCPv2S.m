@@ -297,7 +297,8 @@ if prediction_after
         A=ffunpar.A;
         phi=ffunpar.Phi;
         Q=ffunpar.Q;
-        X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
+        X = A + phi*X ; %state propagation 
+        % + sqrt(Q)*randn(nx,1)
 
         % y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
         y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
@@ -361,13 +362,13 @@ if prediction_before
         A=ffunpar.A;
         phi=ffunpar.Phi;
         Q=ffunpar.Q;
-        X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
-        % X = A + phi*X;
+        % X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
+        X = A + phi*X;
         if mod(i,info) == 0
-            X=mu_dd(end-T+i,:)';
+            X= mu_dd(end-T+i,:)' ;
         end
-        y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
-        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
+        % y_suivant = liborswap(X, [1,2],test, hfunpar) + sqrt(R)*randn(ny,1);
+        y_suivant = liborswap(X, [1,2], test, hfunpar); %measurement prediction
         PredY(i,:) = y_suivant;	
         PredX(i,:) = X;
         ind=find(isfinite(y_suivant));
