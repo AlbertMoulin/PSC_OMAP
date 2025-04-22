@@ -13,12 +13,12 @@ dataDette = 1;
 gammavplot=0;
 draw =0;
 
-prediction_after=0;
+prediction_after=1;
 prediction_before=1;
-info = 1;
+info = 4;
 Tpred_before = 357;
-plot_maturity = 10; % Set to 1 to plot maturity
-Tpred_after = 52;
+plot_maturity = 7;
+Tpred_after = 357;
 
 
 AttemptNumber = '31';
@@ -303,9 +303,8 @@ if prediction_after
     Q=ffunpar.Q;
     Pest = Q;
     F=ffunpar.Phi;
-    ind = 1; % qui est ind ???
+
     for i = 1:T
-        y = rates(5,:)';
         A=ffunpar.A;
         phi=ffunpar.Phi;
         
@@ -317,7 +316,6 @@ if prediction_after
 
         PredY(i,:) = yPred;	
         PredX(i,:) = xPred;
-        ind=find(isfinite(yPred));
         
         % Prediction of covariances
         wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
@@ -333,9 +331,9 @@ if prediction_after
 
 figure(5)
 clf
-plot(wdate(end-T:end), rates(end-T:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+plot(wdate(end-T:end), rates(end-T:end, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 hold on
-plot(wdate(end-T:end), y_dd(end-T:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+plot(wdate(end-T:end), y_dd(end-T:end, plot_maturity), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
 hold off
 datetick('x', 'mmmyy')
 grid
@@ -346,7 +344,7 @@ set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 
 future_dates = wdate(end) + (1:T)' * 7; % Calculate future dates (weekly intervals)
 hold on
-plot(future_dates, PredY(:, 1), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+plot(future_dates, PredY(:, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
 hold off
 datetick('x', 'mmmyy')
 grid
@@ -361,7 +359,7 @@ T = Tpred_before;
 
 if prediction_before
 
-    [ffunpar, hfunpar, xEst, PEst, Q, R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
+    [ffunpar, hfunpar, xEst, PEst, Q, R]=feval(termModel, par, hfunpar); %nécessaire pour récup ffunpar
 
 
     PredY = zeros(T, ny);
@@ -382,6 +380,7 @@ if prediction_before
     A=ffunpar.A;
     F=ffunpar.Phi;
     Q=ffunpar.Q;
+
 
     for i = 1:T
         
@@ -404,10 +403,10 @@ if prediction_before
 
         PredY(i,:) = yPred';	
         PredX(i,:) = xPred;
-        ind=find(isfinite(yPred));
+
         if mod(i, info)==0
             K  = xyPredVar/(yPredVar);
-            innovation = rates(size(rates,1)-T+i) - yPred;
+            innovation = rates(size(rates,1)-T+i,:)' - yPred;
             xEst = xPred + K*innovation;
             PEst = xPredVar - K*yPredVar*K';
         else
