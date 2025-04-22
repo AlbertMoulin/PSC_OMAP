@@ -8,14 +8,14 @@
 clear all;format compact;format short;
 
 estimation=0; unc=0; % unconstrained optimization
-stderror=1; % sert à quoi ?
+stderror=0; % sert à quoi ?
 dataDette = 1;
 gammavplot=0;
-draw =1;
+draw =0;
 
 prediction_after=0;
-prediction_before=0;
-info = 52;
+prediction_before=1;
+info = 1;
 Tpred_before = 357;
 plot_maturity = 10; % Set to 1 to plot maturity
 Tpred_after = 52;
@@ -271,6 +271,11 @@ if draw %draws the yield curve
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
     print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
+    for i = 1:10
+        % we calculate the root-mean-squared pricing errors
+        disp(['Root-mean-squared pricing error for maturity ', num2str(maturities(i)) ':'])
+        disp(sqrt(sum(  (  rates(drawperiod,i)-y_dd(drawperiod,i)  ).^2)/length(drawperiod)))
+    end
 end
 
 T=Tpred_after;
@@ -415,9 +420,12 @@ if prediction_before
 
     end
 %% calculate mean absolute error between PredY and rates   
-    MAE = mean(abs( PredY(10:end, plot_maturity) - rates(end-T+10:end, plot_maturity) ));
-    MAE = mean(MAE);
-    MAE
+    for i = 1:10
+        MAE = mean(abs( PredY(1:end, i) - rates(end-T+1:end, i) ));
+        MAE = mean(MAE);
+        disp(' & ')
+        disp(MAE)
+    end
 
 %%
 figure(6)
