@@ -10,19 +10,20 @@ print(df.columns)
 columns_of_interest = ['question.indexationAN.analyses.analyse', 'question.auteur.groupe.abrege', 'question.minAttribs.minAttrib.infoJO.dateJO', 'question.textesQuestion', 'question.textesReponse.texteReponse.texte']
 df_filtered = df[columns_of_interest]
 
-# Convert the 'question.minAttribs.minAttrib.infoJO.dateJO' column to datetime
 #df_filtered['question.minAttribs.minAttrib.infoJO.dateJO'] = pd.to_datetime(df_filtered['question.minAttribs.minAttrib.infoJO.dateJO'], errors='coerce')
 
-# Count occurrences of the word "dette" in 'question.textesReponse.texteReponse.texte'
+#Compte les occurences du mot dette
 df_filtered['dette_count'] = df_filtered['question.textesReponse.texteReponse.texte'].str.contains('dette', case=False, na=False).astype(int)
 
-# Count occurrences of the term "taux d'intérêt" in 'question.textesReponse.texteReponse.texte'
+#idem pour taux d'intérêt
 df_filtered['taux_interet_count'] = df_filtered['question.textesReponse.texteReponse.texte'].str.contains("taux d'intérêt", case=False, na=False).astype(int)
 
-# Group by date and sum the counts
+#regroupé par dates les questions
 df_grouped = df_filtered.groupby('question.minAttribs.minAttrib.infoJO.dateJO')[['dette_count', 'taux_interet_count']].sum().reset_index()
 
-# Rename the columns for clarity
+#renommer les colonnes:
+
+
 df_grouped.columns = ['date', 'dette_count', 'taux_interet_count']
 
 print(df_grouped)
@@ -39,9 +40,6 @@ plt.xlabel('Date')
 plt.ylabel('Count')
 plt.legend()
 plt.grid(True)
-
-# Rotate date labels for better readability
-plt.xticks(rotation=45)
 
 # Show the plot
 plt.tight_layout()

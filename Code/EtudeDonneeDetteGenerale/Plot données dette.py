@@ -12,9 +12,9 @@ for col in data.columns[1:]:
     data[col] = pd.to_numeric(data[col], errors='coerce')
 
 # Dummy variables to choose which plots to display
-plot_all_maturities = False
-plot_selected_maturities = True
-plot_selected_maturities_postcovid = True
+plot_all_maturities = True
+plot_selected_maturities = False
+plot_selected_maturities_postcovid = False
 
 if plot_all_maturities:
     # Créer des subplots

@@ -10,10 +10,20 @@ clear all;format compact;format short;
 estimation=1; unc=1; % unconstrained optimization
 stderror=1; % sert à quoi ?
 dataDette = 1;
-gammavplot=1;
-draw =1;
-prediction=1;
-AttemptNumber = '110';
+
+gammavplot=0;
+draw =0;
+
+prediction_after=1;
+prediction_before=1;
+info = 4;
+Tpred_before = 357;
+plot_maturity = 7;
+Tpred_after = 357;
+
+
+AttemptNumber = '31';
+
 
 
 
@@ -203,12 +213,11 @@ if gammavplot
     
 end
 
-drawperiod=1:length(wdate);
 if draw %draws the yield curve
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     % TO COMPLETE
-    drawperiod=1:52;
+    drawperiod=1:T;
 
     % plotting the first, the third and the last row of the mu_dd vector (with x_axis being time)
     [loglike,likeliv, predErr,mu_dd,y_dd]=feval(likefun, par,rates,hfun,filter,termModel,hfunpar);
@@ -233,7 +242,7 @@ if draw %draws the yield curve
     clf
     maturities = mat; % Combine libormat and swapmat for maturities
     if dataDette
-        columns = [1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10];
+        columns = [1, 3 , 9 , 10];
     else
         columns = [1, 3, 10];
     end
@@ -266,40 +275,69 @@ if draw %draws the yield curve
         set(gca,'Box','on','LineWidth',2,'FontSize', 16)
     end
     print('-depsc','-r70', ['code_papier_calvet_18_12\JFQAR1\figyieldcurveerror_',modelflag,'_',AttemptNumber,'.eps'])
+    for i = 1:10
+        % we calculate the root-mean-squared pricing errors
+        disp(['Root-mean-squared pricing error for maturity ', num2str(maturities(i)) ':'])
+        disp(sqrt(sum(  (  rates(drawperiod,i)-y_dd(drawperiod,i)  ).^2)/length(drawperiod)))
+    end
 end
 
-T=10;
+T=Tpred_after;
 
-
-
-if prediction
+if prediction_after
 
     [ffunpar, hfunpar,xEst,PEst, Q,R]=feval(termModel,par, hfunpar); %nécessaire pour récup ffunpar
 
 
     PredY = zeros(T, ny);
     PredX = zeros(T, nx);
-    X=mu_dd(end,:)';
+    xPred = mu_dd(end,:)';
 
-    for i = 1:2
-        y = rates(5,:)';
-        test=find(isfinite(y));
+    npar=length(par(:));
+    par=reshape(par, npar,1);
+    eyex=eye(nx);
+    epar=exp(par);
+    kappar=epar(1);
+    sigmar=epar(2);
+    thetarp=epar(3);
+    b=exp(epar(4));
+    gamma0=par(5);
+    R=epar(6)*eye(ny);
+    gamma1=par(7:6+nx);
+    Q=ffunpar.Q;
+    Pest = Q;
+    F=ffunpar.Phi;
+
+    for i = 1:T
         A=ffunpar.A;
         phi=ffunpar.Phi;
-        Q=ffunpar.Q;
-        X = A + phi*X + sqrt(Q)*randn(nx,1); %state propagation
+        
+        xPred = A + phi*xPred ; %state propagation 
+        xPredVar=F*PEst*F'+Q;
+        [xPredSigmaPts, wSigmaPts,wSigmaPtsc, nsp] = SigmaPoints(xPred,xPredVar);
+        yPredSigmaPts = feval(hfun,xPredSigmaPts,0,0,hfunpar);
+        yPred = yPredSigmaPts*wSigmaPts';
 
-        y_suivant = liborswap(X, [1,2],test, hfunpar); %measurement prediction
-        PredY(i,:) = y_suivant;	
-        PredX(i,:) = X;
-        ind=find(isfinite(y_suivant));
-% Plot the fitted yield over the last 10 weeks
+        PredY(i,:) = yPred;	
+        PredX(i,:) = xPred;
+        
+        % Prediction of covariances
+        wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
+        exSigmaPt = xPredSigmaPts - repmat(xPred,1,nsp);
+        eySigmaPt = yPredSigmaPts - repmat(yPred,1,nsp);
+        yPredVar  = (wSigmaPts_ymat .* eySigmaPt) * eySigmaPt' + R;
+        xyPredVar = exSigmaPt * (wSigmaPts_ymat .* eySigmaPt)';
+
+        %K  = xyPredVar*pinv(yPredVar);
+        K  = xyPredVar/(yPredVar);
+        PEst = xPredVar - K*yPredVar*K';
+    end
+
 figure(5)
 clf
-subplot(2, 1, 1)
-plot(wdate(end-9:end), rates(end-9:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+plot(wdate(end-T:end), rates(end-T:end, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
 hold on
-plot(wdate(end-9:end), y_dd(end-9:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+plot(wdate(end-T:end), y_dd(end-T:end, plot_maturity), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
 hold off
 datetick('x', 'mmmyy')
 grid
@@ -308,34 +346,115 @@ ylabel('Yield (%)', 'FontSize', 16)
 title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
 
-% Plot the predicted yield for the next 10 weeks
-subplot(2, 1, 2)
-% Plot the fitted yield over the last 10 weeks
-figure(5)
-clf
-subplot(2, 1, 1)
-plot(wdate(end-9:end), rates(end-9:end, 1), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
-datetick('x', 'mmmyy')
-grid
-legend('show', 'Location', 'Best')
-ylabel('Yield (%)', 'FontSize', 16)
-title('Fitted Yield over the Last 10 Weeks', 'FontSize', 16)
-set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
-
-% Plot the predicted yield for the next 10 weeks
-subplot(2, 1, 2)
 future_dates = wdate(end) + (1:T)' * 7; % Calculate future dates (weekly intervals)
-plot(future_dates, PredY(:, 5), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+hold on
+plot(future_dates, PredY(:, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+hold off
 datetick('x', 'mmmyy')
 grid
 legend('show', 'Location', 'Best')
 ylabel('Yield (%)', 'FontSize', 16)
 xlabel('Weeks Ahead', 'FontSize', 16)
-title('Predicted Yield for the Next 10 Weeks', 'FontSize', 16)
+title(['Predicted Yield for the Next ', num2str(T), ' Weeks'], 'FontSize', 16)
 set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
-    end
 end
 
+T = Tpred_before;
+
+if prediction_before
+
+    [ffunpar, hfunpar, xEst, PEst, Q, R]=feval(termModel, par, hfunpar); %nécessaire pour récup ffunpar
+
+
+    PredY = zeros(T, ny);
+    PredX = zeros(T, nx);
+    xEst=mu_dd(end-T,:)';
+
+    npar=length(par(:));
+    par=reshape(par, npar,1);
+    eyex=eye(nx);
+    epar=exp(par);
+    kappar=epar(1);
+    sigmar=epar(2);
+    thetarp=epar(3);
+    b=exp(epar(4));
+    gamma0=par(5);
+    R=epar(6)*eye(ny);
+    gamma1=par(7:6+nx);
+    A=ffunpar.A;
+    F=ffunpar.Phi;
+    Q=ffunpar.Q;
+
+
+    for i = 1:T
+        
+        %Linear prediction on X
+        xPred=A+F*xEst;
+        xPredVar=F*PEst*F'+Q;
+
+        % Nonlinear Prediction of y
+        [xPredSigmaPts, wSigmaPts,wSigmaPtsc, nsp] = SigmaPoints(xPred,xPredVar);
+
+        yPredSigmaPts = feval(hfun,xPredSigmaPts,0,0,hfunpar);
+        yPred = yPredSigmaPts*wSigmaPts';
+
+        % Prediction of covariances
+        wSigmaPts_ymat = repmat(wSigmaPtsc,ny,1);
+        exSigmaPt = xPredSigmaPts - repmat(xPred,1,nsp);
+        eySigmaPt = yPredSigmaPts - repmat(yPred,1,nsp);
+        yPredVar  = (wSigmaPts_ymat .* eySigmaPt) * eySigmaPt' + R;
+        xyPredVar = exSigmaPt * (wSigmaPts_ymat .* eySigmaPt)';
+
+        PredY(i,:) = yPred';	
+        PredX(i,:) = xPred;
+
+        if mod(i, info)==0
+            K  = xyPredVar/(yPredVar);
+            innovation = rates(size(rates,1)-T+i,:)' - yPred;
+            xEst = xPred + K*innovation;
+            PEst = xPredVar - K*yPredVar*K';
+        else
+            K = xyPredVar/(yPredVar);
+            xEst = xPred;
+            PEst = xPredVar - K*yPredVar*K';
+        end
+        %K  = xyPredVar*pinv(yPredVar);
+        
+
+    end
+%% calculate mean absolute error between PredY and rates   
+    for i = 1:10
+        MAE = mean(abs( PredY(1:end, i) - rates(end-T+1:end, i) ));
+        MAE = mean(MAE);
+        disp(' & ')
+        disp(MAE)
+    end
+
+%%
+figure(6)
+clf
+subplot(2, 1, 1)
+plot(wdate(end-T:end), rates(end-T:end, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Fitted Yield')
+hold on
+plot(wdate(end-T:end), y_dd(end-T:end, plot_maturity), 'r--', 'LineWidth', 2, 'DisplayName', 'Model Fitted Yield')
+hold off
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+title(['Fitted Yield over the Last ', num2str(T), ' Weeks'], 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+% Plot the predicted yield for the next 10 weeks
+subplot(2, 1, 2)
+plot(wdate(end-T+1:end), PredY(:, plot_maturity), 'LineWidth', 2, 'DisplayName', 'Predicted Yield')
+datetick('x', 'mmmyy')
+grid
+legend('show', 'Location', 'Best')
+ylabel('Yield (%)', 'FontSize', 16)
+xlabel('Weeks Ahead', 'FontSize', 16)
+title(['Predicted Yield over the Last ', num2str(T), ' Weeks, recalibrated every ',num2str(info),' Weeks'], 'FontSize', 16)
+set(gca, 'Box', 'on', 'LineWidth', 2, 'FontSize', 16)
+end
 
 
 return
