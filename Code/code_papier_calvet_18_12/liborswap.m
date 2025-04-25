@@ -16,8 +16,10 @@ h =hfunpar.h; %number of payments per year
 % swr=h*100*(1-dis)./cumsum(dis);
 % y_swap=swr(swapmat*h,:);
 
+
 negative_lnP = repmat(at_swap,1,nsigma)+bt_swap*x;
 y_swap = 100*negative_lnP(h*swapmat,:)./repmat(swapmat,1,nsigma)  ;
+
 
 libormat= hfunpar.libormat;
 at_libor=   hfunpar.at_libor;
